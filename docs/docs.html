@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Документація - HR Integration System</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-sync-alt"></i>
+                <span>HR Integration System</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Головна</a></li>
+                <li><a href="index.html#features" class="nav-link">Можливості</a></li>
+                <li><a href="index.html#architecture" class="nav-link">Архітектура</a></li>
+                <li><a href="index.html#scenarios" class="nav-link">Сценарії</a></li>
+                <li><a href="setup.html" class="nav-link">Встановлення</a></li>
+                <li><a href="docs.html" class="nav-link active">Документація</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Documentation Layout -->
+    <div class="docs-container">
+        <!-- Sidebar -->
+        <aside class="docs-sidebar">
+            <div class="sidebar-section">
+                <h3>Огляд системи</h3>
+                <ul>
+                    <li><a href="#overview" class="sidebar-link active">Загальний огляд</a></li>
+                    <li><a href="#business-value" class="sidebar-link">Бізнес-цінність</a></li>
+                    <li><a href="#architecture" class="sidebar-link">Архітектура</a></li>
+                    <li><a href="#data-flow" class="sidebar-link">Потік даних</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>Сценарії інтеграції</h3>
+                <ul>
+                    <li><a href="#scenario1" class="sidebar-link">Сценарій 1: Синхронізація</a></li>
+                    <li><a href="#scenario2" class="sidebar-link">Сценарій 2: Вакансії</a></li>
+                    <li><a href="#scenario3" class="sidebar-link">Сценарій 3: Найм</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>API та інтеграції</h3>
+                <ul>
+                    <li><a href="#teamtailor-api" class="sidebar-link">TeamTailor API</a></li>
+                    <li><a href="#bamboohr-api" class="sidebar-link">BambooHR API</a></li>
+                    <li><a href="#notion-api" class="sidebar-link">Notion API</a></li>
+                    <li><a href="#webhooks" class="sidebar-link">Webhooks</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>Технічні деталі</h3>
+                <ul>
+                    <li><a href="#n8n-workflows" class="sidebar-link">n8n Workflows</a></li>
+                    <li><a href="#error-handling" class="sidebar-link">Обробка помилок</a></li>
+                    <li><a href="#best-practices" class="sidebar-link">Best Practices</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-main">
+            <!-- Overview Section -->
+            <section id="overview" class="docs-section">
+                <h1>📚 Повна документація системи</h1>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Про цю документацію</strong>
+                        <p>Це повний технічний опис HR Integration System з деталями реалізації всіх компонентів.</p>
+                    </div>
+                </div>
+
+                <h2>Загальний огляд</h2>
+                <p>HR Integration System - це комплексне рішення для автоматизації HR-процесів, яке об'єднує 4 ключові платформи:</p>
+                
+                <div class="requirement-cards">
+                    <div class="req-card">
+                        <div class="req-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>TeamTailor</h3>
+                        <p>Applicant Tracking System для управління кандидатами</p>
+                    </div>
+                    <div class="req-card">
+                        <div class="req-icon">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <h3>BambooHR</h3>
+                        <p>HR Information System для управління персоналом</p>
+                    </div>
+                    <div class="req-card">
+                        <div class="req-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Notion</h3>
+                        <p>База знань та центр управління HR-процесами</p>
+                    </div>
+                    <div class="req-card">
+                        <div class="req-icon">
+                            <i class="fab fa-slack"></i>
+                        </div>
+                        <h3>Slack</h3>
+                        <p>Миттєві повідомлення про всі важливі події</p>
+                    </div>
+                </div>
+
+                <h3>Ключові проблеми, які вирішує система</h3>
+                <ul>
+                    <li>❌ <strong>Було:</strong> Потрійне введення однакових даних в різні системи</li>
+                    <li>✅ <strong>Стало:</strong> Єдине джерело правди з автоматичною синхронізацією</li>
+                    <li>❌ <strong>Було:</strong> 45-60 хвилин на один процес найму</li>
+                    <li>✅ <strong>Стало:</strong> 5-7 хвилин завдяки автоматизації</li>
+                    <li>❌ <strong>Було:</strong> Постійні розбіжності між системами</li>
+                    <li>✅ <strong>Стало:</strong> 100% консистентність даних</li>
+                </ul>
+            </section>
+
+            <!-- Business Value Section -->
+            <section id="business-value" class="docs-section">
+                <h2>💰 Бізнес-цінність</h2>
+                
+                <div class="monitoring-grid">
+                    <div class="monitor-card">
+                        <h3>Економія часу</h3>
+                        <div class="metrics">
+                            <div class="metric">
+                                <span class="metric-label">Було</span>
+                                <span class="metric-value" style="color: var(--danger-color)">45-60 хв</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Стало</span>
+                                <span class="metric-value" style="color: var(--success-color)">5-7 хв</span>
+                            </div>
+                        </div>
+                        <p>Економія <strong>85% часу</strong> HR-менеджера на кожному процесі</p>
+                    </div>
+                    
+                    <div class="monitor-card">
+                        <h3>Зменшення помилок</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 80%"></div>
+                        </div>
+                        <p>На <strong>80% менше помилок</strong> при введенні даних</p>
+                    </div>
+                    
+                    <div class="monitor-card">
+                        <h3>ROI проекту</h3>
+                        <ul>
+                            <li>20+ годин економії щотижня</li>
+                            <li>Онбординг з 3 днів до 1 дня</li>
+                            <li>Усунення дублювання даних</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Architecture Section -->
+            <section id="architecture" class="docs-section">
+                <h2>🏗️ Архітектура системи</h2>
+                
+                <h3>Компоненти системи</h3>
+                <div class="config-block">
+                    <h4>n8n - Серце автоматизації</h4>
+                    <p>Платформа workflow автоматизації, яка керує всіма інтеграціями:</p>
+                    <ul>
+                        <li>Виконує API запити між системами</li>
+                        <li>Трансформує дані між різними форматами</li>
+                        <li>Обробляє webhook події</li>
+                        <li>Керує розкладом синхронізацій</li>
+                    </ul>
+                </div>
+
+                <h3>Технічний стек</h3>
+                <pre><code class="language-json">{
+  "automation": "n8n Cloud",
+  "languages": ["JavaScript", "Python"],
+  "apis": {
+    "teamtailor": "REST API (JSON:API spec)",
+    "bamboohr": "REST API (XML/JSON)",
+    "notion": "REST API v2",
+    "slack": "Webhook API"
+  },
+  "hosting": "viragamesinc.app.n8n.cloud",
+  "version": "1.0.0"
+}</code></pre>
+            </section>
+
+            <!-- Data Flow Section -->
+            <section id="data-flow" class="docs-section">
+                <h2>🔄 Потік даних</h2>
+                
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Ініціація процесу</h3>
+                            <p>Менеджер виконує дію в одній з систем (наприклад, переводить кандидата на статус "Hired")</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Тригер автоматизації</h3>
+                            <p>n8n отримує webhook або запускається по розкладу</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Збір даних</h3>
+                            <p>Система збирає всю необхідну інформацію через API запити</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Трансформація</h3>
+                            <p>Дані перетворюються у формат цільової системи</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h3>Синхронізація</h3>
+                            <p>Оновлення всіх пов'язаних систем</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h3>Повідомлення</h3>
+                            <p>Slack notification про успішне виконання або помилки</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scenario 1 Section -->
+            <section id="scenario1" class="docs-section">
+                <h2>📋 Сценарій 1: Синхронізація департаментів та ролей</h2>
+                
+                <div class="scenario-run">
+                    <div class="scenario-header">
+                        <h3>Мета сценарію</h3>
+                        <span class="run-type manual">Ручний запуск / Розклад</span>
+                    </div>
+                    <div class="scenario-steps">
+                        <p>Забезпечити однакову організаційну структуру в Notion та TeamTailor для уникнення розбіжностей.</p>
+                    </div>
+                </div>
+
+                <h3>Детальний процес</h3>
+                
+                <h4>1. Завантаження даних</h4>
+                <pre><code class="language-javascript">// TeamTailor API - отримання департаментів
+GET /api/v1/departments?page[size]=30
+// Обробка пагінації для всіх сторінок
+
+// Notion API - отримання верифікованих департаментів
+POST /v1/databases/{database_id}/query
+{
+  "filter": {
+    "property": "Status",
+    "select": { "equals": "Verified" }
+  }
+}</code></pre>
+
+                <h4>2. Порівняння та аналіз</h4>
+                <ul>
+                    <li>Знаходження департаментів, які є тільки в Notion</li>
+                    <li>Знаходження департаментів, які є тільки в TeamTailor</li>
+                    <li>Виявлення спільних департаментів для оновлення ID</li>
+                </ul>
+
+                <h4>3. Синхронізація</h4>
+                <div class="config-block">
+                    <h4>Створення в TeamTailor:</h4>
+                    <pre><code class="language-javascript">POST /api/v1/departments
+{
+  "data": {
+    "type": "departments",
+    "attributes": {
+      "name": "Engineering",
+      "description": "Software development team"
+    }
+  }
+}</code></pre>
+                </div>
+
+                <h4>Результати</h4>
+                <ul class="checklist">
+                    <li><i class="fas fa-check"></i> Повна синхронізація організаційної структури</li>
+                    <li><i class="fas fa-check"></i> Збереження TeamTailor ID в Notion</li>
+                    <li><i class="fas fa-check"></i> Slack повідомлення про результати</li>
+                </ul>
+            </section>
+
+            <!-- Scenario 2 Section -->
+            <section id="scenario2" class="docs-section">
+                <h2>📝 Сценарій 2: Створення вакансій (Job Requisitions)</h2>
+                
+                <div class="scenario-run">
+                    <div class="scenario-header">
+                        <h3>Мета сценарію</h3>
+                        <span class="run-type auto">Автоматичний тригер</span>
+                    </div>
+                    <div class="scenario-steps">
+                        <p>Автоматичне створення requisition в TeamTailor при створенні запиту в Notion.</p>
+                    </div>
+                </div>
+
+                <h3>Процес створення вакансії</h3>
+                
+                <h4>1. Тригер з Notion</h4>
+                <div class="config-block">
+                    <p>Менеджер створює новий запис в таблиці "Job Requisitions" в Notion з усіма необхідними полями:</p>
+                    <ul>
+                        <li>Назва позиції</li>
+                        <li>Департамент (верифікований)</li>
+                        <li>Hiring Manager</li>
+                        <li>Зарплатна вилка</li>
+                        <li>Опис вакансії</li>
+                    </ul>
+                </div>
+
+                <h4>2. Валідація даних</h4>
+                <pre><code class="language-javascript">// Перевірка обов'язкових полів
+const requiredFields = [
+  'position_name',
+  'department_id',
+  'hiring_manager_email',
+  'min_salary',
+  'max_salary'
+];
+
+// Перевірка наявності hiring manager в TeamTailor
+GET /api/v1/users?filter[email]={manager_email}</code></pre>
+
+                <h4>3. Створення requisition</h4>
+                <pre><code class="language-javascript">POST /api/v1/job-requisitions
+{
+  "data": {
+    "type": "job-requisitions",
+    "attributes": {
+      "title": "Senior Developer",
+      "status": "open",
+      "department_id": "12345",
+      "salary_min": 5000,
+      "salary_max": 7000,
+      "description": "We are looking for..."
+    },
+    "relationships": {
+      "hiring_manager": {
+        "data": { "type": "users", "id": "67890" }
+      }
+    }
+  }
+}</code></pre>
+
+                <h4>4. Оновлення статусу</h4>
+                <ul class="checklist">
+                    <li><i class="fas fa-check"></i> Збереження TeamTailor requisition ID в Notion</li>
+                    <li><i class="fas fa-check"></i> Зміна статусу на "Synced"</li>
+                    <li><i class="fas fa-check"></i> Додавання timestamp синхронізації</li>
+                    <li><i class="fas fa-check"></i> Slack повідомлення з посиланням на вакансію</li>
+                </ul>
+
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Важливо!</strong>
+                        <p>TeamTailor має баг з approval flow для API-створених requisitions. Потрібен workaround через n8n.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scenario 3 Section -->
+            <section id="scenario3" class="docs-section">
+                <h2>👤 Сценарій 3: Створення співробітника при наймі</h2>
+                
+                <div class="scenario-run">
+                    <div class="scenario-header">
+                        <h3>Мета сценарію</h3>
+                        <span class="run-type auto">Webhook тригер</span>
+                    </div>
+                    <div class="scenario-steps">
+                        <p>Автоматичне створення профілю співробітника в BambooHR при наймі кандидата в TeamTailor.</p>
+                    </div>
+                </div>
+
+                <h3>Еволюція рішення</h3>
+                
+                <div class="troubleshooting-preview">
+                    <div class="issue-card">
+                        <h4>Спроба 1: /uploads endpoint</h4>
+                        <p>❌ API не дає доступ до файлів</p>
+                        <span style="color: var(--danger-color)">15+ годин досліджень</span>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Спроба 2: Resume атрибути</h4>
+                        <p>⚠️ S3 URLs діють лише 1 хвилину</p>
+                        <span style="color: var(--warning-color)">10+ годин досліджень</span>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Фінальне рішення</h4>
+                        <p>✅ Автоматизація даних + ручні документи</p>
+                        <span style="color: var(--success-color)">Оптимальний баланс</span>
+                    </div>
+                </div>
+
+                <h3>Робочий процес</h3>
+
+                <h4>1. Webhook від TeamTailor</h4>
+                <pre><code class="language-javascript">// Webhook payload при події "candidate.hired"
+{
+  "event": "candidate.hired",
+  "data": {
+    "id": "123456",
+    "type": "candidates",
+    "attributes": {
+      "first_name": "John",
+      "last_name": "Doe",
+      "email": "john.doe@example.com"
+    }
+  }
+}</code></pre>
+
+                <h4>2. Збір даних з offer</h4>
+                <pre><code class="language-javascript">// Отримання job offers з пагінацією
+GET /api/v1/job-offers?filter[candidate_id]=123456&page[size]=30
+
+// Витягування ключових даних
+const offerData = {
+  salary: offer.attributes.salary,
+  startDate: offer.attributes.start_date,
+  position: offer.relationships.job.title
+};</code></pre>
+
+                <h4>3. Створення в BambooHR</h4>
+                <pre><code class="language-javascript">POST /api/gateway.php/{subdomain}/v1/employees
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "workEmail": "john.doe@company.com",
+  "department": "Engineering",
+  "jobTitle": "Senior Developer",
+  "hireDate": "2025-01-20",
+  "payRate": "5000.00",
+  "payPeriod": "Monthly",
+  "employmentStatus": "Active"
+}</code></pre>
+
+                <h4>4. Результат</h4>
+                <div class="metrics">
+                    <div class="metric">
+                        <span class="metric-label">Автоматично</span>
+                        <span class="metric-value">2-3 хв</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Вручну (документи)</span>
+                        <span class="metric-value">5 хв</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TeamTailor API Section -->
+            <section id="teamtailor-api" class="docs-section">
+                <h2>🔌 TeamTailor API</h2>
+                
+                <h3>Особливості роботи</h3>
+                <ul>
+                    <li>JSON:API специфікація (складна структура)</li>
+                    <li>Обов'язкова пагінація (макс 30 записів)</li>
+                    <li>Rate limit: 1000 запитів/година</li>
+                    <li>Недокументовані endpoints (offers, uploads)</li>
+                </ul>
+
+                <h3>Приклад пагінації</h3>
+                <pre><code class="language-javascript">async function fetchAllPages(baseUrl, apiKey) {
+  let allData = [];
+  let nextUrl = baseUrl;
+  
+  while (nextUrl) {
+    const response = await fetch(nextUrl, {
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'X-Api-Version': '20210218'
+      }
+    });
+    
+    const data = await response.json();
+    allData = allData.concat(data.data);
+    nextUrl = data.links?.next; // Наступна сторінка
+  }
+  
+  return allData;
+}</code></pre>
+            </section>
+
+            <!-- BambooHR API Section -->
+            <section id="bamboohr-api" class="docs-section">
+                <h2>🎋 BambooHR API</h2>
+                
+                <h3>Особливості роботи</h3>
+                <ul>
+                    <li>Власний формат даних (не стандартний REST)</li>
+                    <li>Помилки без опису (тільки код 400)</li>
+                    <li>Немає документації для file upload</li>
+                    <li>Soft rate limiting (throttling)</li>
+                </ul>
+
+                <h3>Автентифікація</h3>
+                <pre><code class="language-javascript">// Basic Auth з API key як username
+const auth = Buffer.from(`${apiKey}:x`).toString('base64');
+
+fetch(url, {
+  headers: {
+    'Authorization': `Basic ${auth}`,
+    'Accept': 'application/json'
+  }
+});</code></pre>
+            </section>
+
+            <!-- Notion API Section -->
+            <section id="notion-api" class="docs-section">
+                <h2>📝 Notion API</h2>
+                
+                <h3>Структура баз даних</h3>
+                <div class="config-block">
+                    <h4>Job Requisitions</h4>
+                    <ul>
+                        <li>20+ кастомних полів</li>
+                        <li>Relations з іншими таблицями</li>
+                        <li>Формули для валідації</li>
+                        <li>Автоматичні статуси</li>
+                    </ul>
+                </div>
+
+                <h3>Приклад створення запису</h3>
+                <pre><code class="language-javascript">POST /v1/pages
+{
+  "parent": { "database_id": "abc123" },
+  "properties": {
+    "Name": {
+      "title": [{ "text": { "content": "Senior Developer" } }]
+    },
+    "Department": {
+      "relation": [{ "id": "dept-123" }]
+    },
+    "Status": {
+      "select": { "name": "Open" }
+    },
+    "Salary Range": {
+      "rich_text": [{ "text": { "content": "$5000-$7000" } }]
+    }
+  }
+}</code></pre>
+            </section>
+
+            <!-- Webhooks Section -->
+            <section id="webhooks" class="docs-section">
+                <h2>🔔 Webhooks</h2>
+                
+                <h3>Налаштування TeamTailor webhook</h3>
+                <pre><code class="language-json">{
+  "url": "https://viragamesinc.app.n8n.cloud/webhook/teamtailor-hired",
+  "events": [
+    "candidate.hired",
+    "candidate.changed"
+  ],
+  "secret": "your-webhook-secret"
+}</code></pre>
+
+                <h3>Обробка в n8n</h3>
+                <ul>
+                    <li>Валідація signature для безпеки</li>
+                    <li>Фільтрація тільки потрібних подій</li>
+                    <li>Deduplicate для уникнення повторів</li>
+                    <li>Error handling з retry логікою</li>
+                </ul>
+            </section>
+
+            <!-- n8n Workflows Section -->
+            <section id="n8n-workflows" class="docs-section">
+                <h2>⚙️ n8n Workflows</h2>
+                
+                <div class="schedule-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Workflow</th>
+                                <th>Nodes</th>
+                                <th>Тригер</th>
+                                <th>Час виконання</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Department Sync</td>
+                                <td>12 nodes</td>
+                                <td>Cron / Manual</td>
+                                <td>1-2 хв</td>
+                            </tr>
+                            <tr>
+                                <td>Job Requisition</td>
+                                <td>8 nodes</td>
+                                <td>HTTP Request</td>
+                                <td>30 сек</td>
+                            </tr>
+                            <tr>
+                                <td>Employee Creation</td>
+                                <td>15 nodes</td>
+                                <td>Webhook</td>
+                                <td>2-3 хв</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Версії workflows</h3>
+                <ul>
+                    <li><strong>v1:</strong> Базова версія без offers</li>
+                    <li><strong>v2:</strong> Додано інтеграцію з job offers</li>
+                    <li><strong>v3:</strong> Webhook підтримка</li>
+                    <li><strong>v4:</strong> Повна пагінація для великих датасетів</li>
+                </ul>
+            </section>
+
+            <!-- Error Handling Section -->
+            <section id="error-handling" class="docs-section">
+                <h2>⚠️ Обробка помилок</h2>
+                
+                <h3>Стратегія обробки</h3>
+                <pre><code class="language-javascript">// Retry логіка з exponential backoff
+async function retryWithBackoff(fn, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      
+      const delay = Math.pow(2, i) * 1000; // 1s, 2s, 4s
+      await sleep(delay);
+      
+      // Логування в Slack
+      await notifySlack({
+        text: `Retry ${i + 1}/${maxRetries}: ${error.message}`
+      });
+    }
+  }
+}</code></pre>
+
+                <h3>Типові помилки та рішення</h3>
+                <div class="troubleshooting-preview">
+                    <div class="issue-card">
+                        <h4>400 Bad Request (BambooHR)</h4>
+                        <p>Перевірте формат даних та обов'язкові поля</p>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Rate Limit (TeamTailor)</h4>
+                        <p>Додайте delay між запитами</p>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Timeout (Notion)</h4>
+                        <p>Розбийте великі запити на менші</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Best Practices Section -->
+            <section id="best-practices" class="docs-section">
+                <h2>✨ Best Practices</h2>
+                
+                <h3>Рекомендації для підтримки</h3>
+                
+                <div class="checklist">
+                    <h4>Щоденно:</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Перевіряйте Slack канал на помилки</li>
+                        <li><i class="fas fa-check"></i> Моніторте failed executions в n8n</li>
+                    </ul>
+                </div>
+
+                <div class="checklist">
+                    <h4>Щотижня:</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Запускайте синхронізацію департаментів</li>
+                        <li><i class="fas fa-check"></i> Перевіряйте дублікати в Notion</li>
+                        <li><i class="fas fa-check"></i> Аналізуйте логи помилок</li>
+                    </ul>
+                </div>
+
+                <div class="checklist">
+                    <h4>Щомісяця:</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Backup workflows в n8n</li>
+                        <li><i class="fas fa-check"></i> Оновлення API ключів (якщо потрібно)</li>
+                        <li><i class="fas fa-check"></i> Аналіз метрик продуктивності</li>
+                    </ul>
+                </div>
+
+                <h3>Оптимізація продуктивності</h3>
+                <ul>
+                    <li>Використовуйте batch операції де можливо</li>
+                    <li>Кешуйте часто використовувані дані</li>
+                    <li>Мінімізуйте кількість API запитів</li>
+                    <li>Використовуйте паралельну обробку в n8n</li>
+                </ul>
+            </section>
+
+            <!-- Summary Section -->
+            <section class="docs-section">
+                <h2>📊 Підсумок</h2>
+                
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <strong>Система повністю функціональна</strong>
+                        <p>Всі три сценарії протестовані та працюють в production середовищі.</p>
+                    </div>
+                </div>
+
+                <h3>Ключові досягнення</h3>
+                <ul>
+                    <li>✅ Економія 85% часу HR-менеджера</li>
+                    <li>✅ Повна автоматизація критичних процесів</li>
+                    <li>✅ Усунення помилок ручного введення</li>
+                    <li>✅ Єдине джерело правди для всіх систем</li>
+                    <li>✅ Реальні повідомлення про всі події</li>
+                </ul>
+
+                <h3>Контакти для підтримки</h3>
+                <div class="config-block">
+                    <p><strong>n8n instance:</strong> viragamesinc.app.n8n.cloud</p>
+                    <p><strong>Slack канал:</strong> #hr-automation-notifications</p>
+                    <p><strong>GitHub:</strong> <a href="https://github.com/xliberty2008x/n8n_hr_viragames_automation">Repository</a></p>
+                    <p><strong>Автор:</strong> Дубовик Кирило</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h4>HR Integration System</h4>
+                    <p>Розроблено для Vira Games</p>
+                </div>
+                <div class="footer-nav">
+                    <a href="index.html">Головна</a>
+                    <a href="setup.html">Встановлення</a>
+                    <a href="troubleshooting.html">Troubleshooting</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/docs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+</body>
+</html>

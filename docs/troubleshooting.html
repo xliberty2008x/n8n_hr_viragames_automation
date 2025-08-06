@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troubleshooting - HR Integration System</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-sync-alt"></i>
+                <span>HR Integration System</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Головна</a></li>
+                <li><a href="index.html#features" class="nav-link">Можливості</a></li>
+                <li><a href="index.html#architecture" class="nav-link">Архітектура</a></li>
+                <li><a href="index.html#scenarios" class="nav-link">Сценарії</a></li>
+                <li><a href="setup.html" class="nav-link">Встановлення</a></li>
+                <li><a href="docs.html" class="nav-link">Документація</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Documentation Layout -->
+    <div class="docs-container">
+        <!-- Sidebar -->
+        <aside class="docs-sidebar">
+            <div class="sidebar-section">
+                <h3>Загальні проблеми</h3>
+                <ul>
+                    <li><a href="#webhook-issues" class="sidebar-link active">Webhook не працює</a></li>
+                    <li><a href="#api-errors" class="sidebar-link">API помилки</a></li>
+                    <li><a href="#duplicates" class="sidebar-link">Дублікати даних</a></li>
+                    <li><a href="#sync-issues" class="sidebar-link">Проблеми синхронізації</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>Помилки по системах</h3>
+                <ul>
+                    <li><a href="#teamtailor-errors" class="sidebar-link">TeamTailor</a></li>
+                    <li><a href="#bamboohr-errors" class="sidebar-link">BambooHR</a></li>
+                    <li><a href="#notion-errors" class="sidebar-link">Notion</a></li>
+                    <li><a href="#n8n-errors" class="sidebar-link">n8n</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>Швидкі рішення</h3>
+                <ul>
+                    <li><a href="#quick-fixes" class="sidebar-link">Топ-10 рішень</a></li>
+                    <li><a href="#reset-procedures" class="sidebar-link">Процедури скидання</a></li>
+                    <li><a href="#emergency" class="sidebar-link">Екстрені випадки</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-main">
+            <!-- Header Section -->
+            <section id="overview" class="docs-section">
+                <h1>🔧 Troubleshooting Guide</h1>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Як користуватись цим гайдом</strong>
+                        <p>Знайдіть вашу проблему в меню зліва або використайте пошук (Ctrl+K) для швидкого доступу до рішення.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Webhook Issues Section -->
+            <section id="webhook-issues" class="docs-section">
+                <h2>🔔 Webhook не працює</h2>
+                
+                <div class="troubleshooting-preview">
+                    <div class="issue-card">
+                        <h4>Симптом</h4>
+                        <p>TeamTailor події не тригерять n8n workflow</p>
+                    </div>
+                </div>
+
+                <h3>Крок 1: Перевірте URL</h3>
+                <pre><code class="language-bash"># Правильний формат webhook URL
+https://viragamesinc.app.n8n.cloud/webhook/teamtailor-hired
+
+# НЕ використовуйте
+http:// (без SSL)
+/webhook-test/ (тестові endpoints)</code></pre>
+
+                <h3>Крок 2: Перевірте налаштування в TeamTailor</h3>
+                <ol>
+                    <li>Settings → Integrations → Webhooks</li>
+                    <li>Перевірте що обрані правильні події:
+                        <ul>
+                            <li>✅ candidate.hired</li>
+                            <li>✅ candidate.changed (опціонально)</li>
+                        </ul>
+                    </li>
+                    <li>Перевірте статус: Active</li>
+                </ol>
+
+                <h3>Крок 3: Тест webhook</h3>
+                <div class="config-block">
+                    <h4>Ручний тест через curl:</h4>
+                    <pre><code class="language-bash">curl -X POST https://viragamesinc.app.n8n.cloud/webhook/teamtailor-hired \
+  -H "Content-Type: application/json" \
+  -d '{"event":"test","data":{"test":true}}'</code></pre>
+                </div>
+
+                <h3>Крок 4: Перевірте логи n8n</h3>
+                <ul class="checklist">
+                    <li><i class="fas fa-check"></i> Відкрийте workflow в n8n</li>
+                    <li><i class="fas fa-check"></i> Перейдіть на вкладку "Executions"</li>
+                    <li><i class="fas fa-check"></i> Шукайте failed або test executions</li>
+                </ul>
+
+                <div class="alert alert-warning">
+                    <i class="fas fa-lightbulb"></i>
+                    <div>
+                        <strong>Порада:</strong>
+                        <p>TeamTailor може відправляти дублікати webhook. Переконайтесь що ваш workflow має dedupe логіку.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API Errors Section -->
+            <section id="api-errors" class="docs-section">
+                <h2>❌ API помилки</h2>
+                
+                <h3>401 Unauthorized</h3>
+                <div class="config-block">
+                    <h4>Причини:</h4>
+                    <ul>
+                        <li>Невалідний API ключ</li>
+                        <li>Закінчився термін дії токена</li>
+                        <li>Неправильний формат авторизації</li>
+                    </ul>
+                    
+                    <h4>Рішення:</h4>
+                    <ol>
+                        <li>Перегенеруйте API ключ в налаштуваннях сервісу</li>
+                        <li>Оновіть credentials в n8n</li>
+                        <li>Перезапустіть workflow</li>
+                    </ol>
+                </div>
+
+                <h3>400 Bad Request</h3>
+                <div class="config-block">
+                    <h4>BambooHR специфіка:</h4>
+                    <p>BambooHR часто повертає 400 без опису. Перевірте:</p>
+                    <ul>
+                        <li>Формат дати: YYYY-MM-DD</li>
+                        <li>Email валідність</li>
+                        <li>Обов'язкові поля: firstName, lastName</li>
+                        <li>Department ID існує в системі</li>
+                    </ul>
+                </div>
+
+                <h3>429 Rate Limit</h3>
+                <pre><code class="language-javascript">// Додайте delay між запитами
+// n8n: Wait node з Fixed interval
+{
+  "interval": 1, // секунда
+  "unit": "seconds"
+}</code></pre>
+
+                <h3>500 Internal Server Error</h3>
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>
+                        <strong>Критична помилка сервера</strong>
+                        <p>Зачекайте 5-10 хвилин та спробуйте знову. Якщо не допомагає - зверніться до підтримки сервісу.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Duplicates Section -->
+            <section id="duplicates" class="docs-section">
+                <h2>👥 Дублікати даних</h2>
+                
+                <h3>Дублікати в BambooHR</h3>
+                <div class="scenario-run">
+                    <div class="scenario-header">
+                        <h3>Перевірка перед створенням</h3>
+                    </div>
+                    <div class="scenario-steps">
+                        <pre><code class="language-javascript">// Додайте цей код в n8n Function node
+const email = $input.item.json.email;
+
+// Перевірка існуючого співробітника
+const existingEmployee = await bamboohrApi.get(
+  `/employees/directory?email=${email}`
+);
+
+if (existingEmployee.length > 0) {
+  throw new Error(`Employee with email ${email} already exists`);
+}</code></pre>
+                    </div>
+                </div>
+
+                <h3>Дублікати в Notion</h3>
+                <ol>
+                    <li>Використовуйте Notion формули для перевірки унікальності</li>
+                    <li>Створіть view з фільтром по дублікатах</li>
+                    <li>Регулярно запускайте дедуплікацію</li>
+                </ol>
+
+                <h3>Видалення дублікатів</h3>
+                <div class="config-block">
+                    <h4>Python скрипт для BambooHR:</h4>
+                    <pre><code class="language-python"># delete_test_employees.py
+import requests
+
+def delete_duplicates(api_key, subdomain):
+    # Отримати всіх співробітників
+    employees = get_all_employees()
+    
+    # Знайти дублікати по email
+    email_map = {}
+    for emp in employees:
+        email = emp['workEmail']
+        if email in email_map:
+            # Видалити старіший запис
+            delete_employee(emp['id'])
+        else:
+            email_map[email] = emp['id']</code></pre>
+                </div>
+            </section>
+
+            <!-- Sync Issues Section -->
+            <section id="sync-issues" class="docs-section">
+                <h2>🔄 Проблеми синхронізації</h2>
+                
+                <h3>Департаменти не синхронізуються</h3>
+                <div class="troubleshooting-preview">
+                    <div class="issue-card">
+                        <h4>Перевірте статус в Notion</h4>
+                        <p>Тільки "Verified" департаменти синхронізуються</p>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Перевірте назви</h4>
+                        <p>Назви мають точно співпадати (case-sensitive)</p>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Запустіть повну синхронізацію</h4>
+                        <p>Execute Workflow → Department Sync</p>
+                    </div>
+                </div>
+
+                <h3>Вакансія не створюється</h3>
+                <ul class="checklist">
+                    <li><i class="fas fa-times" style="color: var(--danger-color)"></i> Перевірте всі обов'язкові поля в Notion</li>
+                    <li><i class="fas fa-times" style="color: var(--danger-color)"></i> Hiring Manager має існувати в TeamTailor</li>
+                    <li><i class="fas fa-times" style="color: var(--danger-color)"></i> Департамент має бути верифікований</li>
+                    <li><i class="fas fa-times" style="color: var(--danger-color)"></i> Зарплатна вилка в правильному форматі</li>
+                </ul>
+            </section>
+
+            <!-- TeamTailor Errors Section -->
+            <section id="teamtailor-errors" class="docs-section">
+                <h2>🎯 TeamTailor помилки</h2>
+                
+                <h3>Approval flow не працює</h3>
+                <div class="alert alert-warning">
+                    <i class="fas fa-bug"></i>
+                    <div>
+                        <strong>Відомий баг TeamTailor</strong>
+                        <p>API-створені requisitions не проходять через approval flow. Це "expected behavior" за словами підтримки.</p>
+                        <p><strong>Workaround:</strong> Додайте ручний approval крок в n8n або створюйте requisitions вручну.</p>
+                    </div>
+                </div>
+
+                <h3>Пагінація обрізає дані</h3>
+                <pre><code class="language-javascript">// Переконайтесь що обробляєте всі сторінки
+while (nextUrl) {
+  const response = await fetch(nextUrl);
+  const data = await response.json();
+  
+  // ВАЖЛИВО: перевірте links.next
+  nextUrl = data.links?.next;
+  
+  if (!nextUrl) {
+    console.log('Остання сторінка досягнута');
+  }
+}</code></pre>
+
+                <h3>Resume URLs не працюють</h3>
+                <div class="config-block">
+                    <h4>Проблема:</h4>
+                    <p>S3 підписані URLs діють лише 60 секунд</p>
+                    
+                    <h4>Рішення:</h4>
+                    <p>Завантажуйте файли одразу після отримання URL або використовуйте ручне завантаження</p>
+                </div>
+            </section>
+
+            <!-- BambooHR Errors Section -->
+            <section id="bamboohr-errors" class="docs-section">
+                <h2>🎋 BambooHR помилки</h2>
+                
+                <h3>Employee створюється без даних</h3>
+                <ul>
+                    <li>Перевірте mapping полів в n8n</li>
+                    <li>BambooHR чутливий до типів даних</li>
+                    <li>Числа мають бути без лапок</li>
+                    <li>Дати в форматі YYYY-MM-DD</li>
+                </ul>
+
+                <h3>File upload не працює</h3>
+                <div class="alert alert-danger">
+                    <i class="fas fa-times-circle"></i>
+                    <div>
+                        <strong>Недокументований API</strong>
+                        <p>BambooHR file upload API не документований. Рекомендується ручне завантаження документів.</p>
+                    </div>
+                </div>
+
+                <h3>Custom fields не зберігаються</h3>
+                <pre><code class="language-javascript">// Використовуйте правильні field IDs
+{
+  "customField123": "value", // ❌ Неправильно
+  "field_123": "value"       // ✅ Правильно
+}</code></pre>
+            </section>
+
+            <!-- Notion Errors Section -->
+            <section id="notion-errors" class="docs-section">
+                <h2>📝 Notion помилки</h2>
+                
+                <h3>Relations не працюють</h3>
+                <pre><code class="language-javascript">// Правильний формат для relations
+{
+  "Department": {
+    "relation": [
+      { "id": "abc-123-def" } // ID сторінки, не назва
+    ]
+  }
+}</code></pre>
+
+                <h3>Формули показують помилки</h3>
+                <ul>
+                    <li>Формули read-only, не намагайтесь їх оновити через API</li>
+                    <li>Перевірте що всі залежні поля заповнені</li>
+                    <li>Оновіть сторінку в браузері для перерахунку</li>
+                </ul>
+
+                <h3>Rate limiting</h3>
+                <div class="config-block">
+                    <h4>Ліміти Notion API:</h4>
+                    <ul>
+                        <li>3 requests per second</li>
+                        <li>Додайте 350ms delay між запитами</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- n8n Errors Section -->
+            <section id="n8n-errors" class="docs-section">
+                <h2>⚙️ n8n помилки</h2>
+                
+                <h3>Workflow зависає</h3>
+                <ol>
+                    <li>Перевірте execution timeout (Settings → Workflow)</li>
+                    <li>Розбийте великі workflows на менші</li>
+                    <li>Використовуйте Error Workflow для обробки</li>
+                </ol>
+
+                <h3>Memory exceeded</h3>
+                <div class="alert alert-warning">
+                    <i class="fas fa-memory"></i>
+                    <div>
+                        <strong>Обмеження пам'яті</strong>
+                        <p>Не обробляйте більше 1000 items одночасно. Використовуйте батching.</p>
+                    </div>
+                </div>
+
+                <h3>Credentials не працюють</h3>
+                <ul class="checklist">
+                    <li><i class="fas fa-check"></i> Перевірте що вибрані правильні credentials</li>
+                    <li><i class="fas fa-check"></i> Test connection в налаштуваннях</li>
+                    <li><i class="fas fa-check"></i> Перевірте environments (dev/prod)</li>
+                </ul>
+            </section>
+
+            <!-- Quick Fixes Section -->
+            <section id="quick-fixes" class="docs-section">
+                <h2>⚡ Топ-10 швидких рішень</h2>
+                
+                <div class="requirement-cards">
+                    <div class="req-card">
+                        <h3>1. Перезапустіть workflow</h3>
+                        <p>Вирішує 30% проблем</p>
+                    </div>
+                    <div class="req-card">
+                        <h3>2. Очистіть кеш браузера</h3>
+                        <p>Ctrl + Shift + R</p>
+                    </div>
+                    <div class="req-card">
+                        <h3>3. Перевірте API ключі</h3>
+                        <p>Термін дії та permissions</p>
+                    </div>
+                    <div class="req-card">
+                        <h3>4. Запустіть тест webhook</h3>
+                        <p>Ручний curl запит</p>
+                    </div>
+                    <div class="req-card">
+                        <h3>5. Перевірте логи</h3>
+                        <p>n8n Executions tab</p>
+                    </div>
+                    <div class="req-card">
+                        <h3>6. Синхронізуйте департаменти</h3>
+                        <p>Department Sync workflow</p>
+                    </div>
+                    <div class="req-card">
+                        <h3>7. Видаліть дублікати</h3>
+                        <p>В Notion та BambooHR</p>
+                    </div>
+                    <div class="req-card">
+                        <h3>8. Додайте delay</h3>
+                        <p>Між API запитами</p>
+                    </div>
+                    <div class="req-card">
+                        <h3>9. Зменшіть batch size</h3>
+                        <p>Обробляйте менше items</p>
+                    </div>
+                    <div class="req-card">
+                        <h3>10. Оновіть n8n</h3>
+                        <p>До останньої версії</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reset Procedures Section -->
+            <section id="reset-procedures" class="docs-section">
+                <h2>🔄 Процедури скидання</h2>
+                
+                <h3>Повне скидання синхронізації</h3>
+                <ol>
+                    <li>Зупиніть всі активні workflows</li>
+                    <li>Очистіть TeamTailor ID в Notion</li>
+                    <li>Видаліть тестові записи</li>
+                    <li>Запустіть Department Sync</li>
+                    <li>Перевірте результати</li>
+                    <li>Відновіть автоматичні workflows</li>
+                </ol>
+
+                <h3>Скидання webhook</h3>
+                <pre><code class="language-bash"># 1. Видаліть старий webhook в TeamTailor
+# 2. Створіть новий webhook
+curl -X POST https://api.teamtailor.com/v1/webhooks \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://viragamesinc.app.n8n.cloud/webhook/teamtailor-hired",
+    "events": ["candidate.hired"]
+  }'</code></pre>
+            </section>
+
+            <!-- Emergency Section -->
+            <section id="emergency" class="docs-section">
+                <h2>🚨 Екстрені випадки</h2>
+                
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Система повністю не працює</strong>
+                        <ol>
+                            <li>Перевірте статус n8n: <a href="https://status.n8n.io">status.n8n.io</a></li>
+                            <li>Перевірте статус API сервісів</li>
+                            <li>Переключіться на ручний режим роботи</li>
+                            <li>Повідомте команду в Slack</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <h3>Масове створення дублікатів</h3>
+                <div class="config-block">
+                    <h4>Негайні дії:</h4>
+                    <ol>
+                        <li>🛑 ЗУПИНІТЬ workflow негайно</li>
+                        <li>📊 Оцініть масштаб проблеми</li>
+                        <li>🗑️ Запустіть скрипт видалення дублікатів</li>
+                        <li>🔍 Знайдіть причину в логах</li>
+                        <li>🔧 Виправте проблему</li>
+                        <li>✅ Перезапустіть з перевіркою</li>
+                    </ol>
+                </div>
+
+                <h3>Втрата даних</h3>
+                <ul>
+                    <li>Перевірте Notion history (30 днів)</li>
+                    <li>BambooHR має audit log</li>
+                    <li>n8n зберігає execution history</li>
+                    <li>Відновіть з backup (якщо є)</li>
+                </ul>
+
+                <h3>Контакти для критичних ситуацій</h3>
+                <div class="config-block">
+                    <p><strong>n8n підтримка:</strong> support@n8n.io</p>
+                    <p><strong>Slack канал:</strong> #hr-automation-emergency</p>
+                    <p><strong>TeamTailor підтримка:</strong> Через їх платформу</p>
+                    <p><strong>BambooHR підтримка:</strong> Через їх платформу</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h4>HR Integration System</h4>
+                    <p>Troubleshooting Guide</p>
+                </div>
+                <div class="footer-nav">
+                    <a href="index.html">Головна</a>
+                    <a href="setup.html">Встановлення</a>
+                    <a href="docs.html">Документація</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/docs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>
