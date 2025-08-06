@@ -1,0 +1,709 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "2584769a-b279-40b5-8890-5afeefc9cda3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1824,
+        -528
+      ],
+      "id": "6feff195-2b6b-4f24-aea6-43e162b16f3b",
+      "name": "Webhook",
+      "webhookId": "2584769a-b279-40b5-8890-5afeefc9cda3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "00b14fb1-bb49-4d00-8b4c-42ce4a729186",
+              "leftValue": "={{ $json.body.event_name }}",
+              "rightValue": "job_application.update",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "a3148a80-e90b-411b-b56a-61b1ba84d3a4",
+              "leftValue": "={{ $json.body.stage_name }}",
+              "rightValue": "Hired",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1520,
+        -528
+      ],
+      "id": "fb1b4e62-28e6-42e3-b5b3-1e1c154ba2df",
+      "name": "Hired"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Fetch all job offers with pagination handling\nconst apiToken = 'rddtbCpJh6CBefTGkNTalKDdLOaVyVQ-3m86RcU7'; // From config.env\nconst baseUrl = 'https://api.teamtailor.com/v1/job-offers';\nconst pageSize = 30; // Maximum allowed by TeamTailor API\n\nlet allOffers = [];\nlet nextUrl = `${baseUrl}?include=job-application,user&page[size]=${pageSize}`;\nlet pageCount = 0;\nconst maxPages = 50; // Safety limit to prevent infinite loops\n\nconsole.log('Starting to fetch job offers with pagination...');\n\nwhile (nextUrl && pageCount < maxPages) {\n  try {\n    // Make HTTP request with proper headers\n    const response = await this.helpers.httpRequest({\n      method: 'GET',\n      url: nextUrl,\n      headers: {\n        'Authorization': `Bearer ${apiToken}`,\n        'X-Api-Version': '20240404',\n        'Accept': 'application/vnd.api+json',\n        'Content-Type': 'application/vnd.api+json'\n      },\n      json: true\n    });\n    \n    pageCount++;\n    console.log(`Fetched page ${pageCount}, got ${response.data?.length || 0} offers`);\n    \n    // Add offers from this page\n    if (response.data && Array.isArray(response.data)) {\n      allOffers = allOffers.concat(response.data);\n    }\n    \n    // Check for next page\n    nextUrl = response.links?.next || null;\n    \n    // Log pagination info\n    if (response.meta) {\n      console.log(`Total records: ${response.meta['record-count']}, Total pages: ${response.meta['page-count']}`);\n    }\n    \n  } catch (error) {\n    console.error(`Error fetching page ${pageCount + 1}:`, error.message);\n    console.error('Full error details:', error);\n    throw error;\n  }\n}\n\nconsole.log(`Pagination complete. Fetched ${pageCount} pages with total ${allOffers.length} offers`);\n\n// Return all offers as a single item with data array\nreturn [{\n  json: {\n    data: allOffers,\n    meta: {\n      totalOffers: allOffers.length,\n      pagesProcessed: pageCount\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1184,
+        -800
+      ],
+      "id": "fetch-job-offers",
+      "name": "Fetch All Job Offers (Paginated)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Find offer for this application\nconst webhook = $('Webhook').first().json.body;\nconst applicationId = String(webhook.id); // Ensure it's a string\nconst offersResponse = $input.all()[0].json;\n\nconsole.log('Looking for application ID:', applicationId);\nconsole.log('Total offers received:', offersResponse.data?.length || 0);\n\nlet matchingOffer = null;\nlet debugInfo = [];\n\n// Search in data array (already parsed from paginated fetch)\nif (offersResponse && offersResponse.data && Array.isArray(offersResponse.data)) {\n  console.log('Searching through offers...');\n  \n  for (const offer of offersResponse.data) {\n    const jobAppData = offer.relationships?.['job-application']?.data;\n    if (jobAppData) {\n      const offerId = String(jobAppData.id);\n      debugInfo.push({\n        offerId: offer.id,\n        jobApplicationId: offerId,\n        matches: offerId === applicationId\n      });\n      \n      if (offerId === applicationId) {\n        matchingOffer = offer;\n        console.log('Found matching offer:', offer.id);\n        break;\n      }\n    }\n  }\n} else {\n  console.log('No offers data array found');\n}\n\nconsole.log('Debug info (first 10):', JSON.stringify(debugInfo.slice(0, 10), null, 2));\n\n// If we found a matching offer, extract key data\nif (matchingOffer) {\n  const offerDetails = matchingOffer.attributes.details || {};\n  \n  return [{\n    json: {\n      found: true,\n      offerId: matchingOffer.id,\n      status: matchingOffer.attributes.status,\n      details: offerDetails,\n      salary: offerDetails.salary || offerDetails.Compensation,\n      startDate: offerDetails['Start day'] || offerDetails['start-date'],\n      applicationId: applicationId,\n      offerData: matchingOffer,\n      debugInfo: debugInfo.slice(0, 10), // Limit debug info size\n      totalOffersSearched: offersResponse.data.length,\n      pagesProcessed: offersResponse.meta?.pagesProcessed || 1\n    }\n  }];\n} else {\n  // No offer found - use default values\n  return [{\n    json: {\n      found: false,\n      applicationId: applicationId,\n      salary: null,\n      startDate: null,\n      message: \"No offer found for this application\",\n      debugInfo: debugInfo.slice(0, 10),\n      totalOffersSearched: offersResponse.data?.length || 0,\n      pagesProcessed: offersResponse.meta?.pagesProcessed || 0\n    }\n  }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -976,
+        -800
+      ],
+      "id": "process-offers",
+      "name": "Process Job Offers"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst parsedItems = items.map((item) => {\n  const parsedData = JSON.parse(item?.json?.data);\n  return { json: parsedData };\n});\nreturn parsedItems;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        -640
+      ],
+      "id": "18149dc8-b02d-4001-ba98-c0084a97d93c",
+      "name": "convert to json object"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Version",
+              "value": "20240404"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -784,
+        -640
+      ],
+      "id": "4adbd5b2-ff30-4af0-8a9c-0f03869e4cca",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "JNoBFOypI7HysyPY",
+          "name": "TeamTailor"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1) Збираємо всі вхідні items\nconst items = $input.all();\n\n// 2) Парсимо requisition і віддаємо тільки department URL + сам об'єкт requisition\nconst out = [];\n\nfor (const item of items) {\n  let envelope = item?.json?.data;\n\n  // data може бути рядком або вже об'єктом\n  if (typeof envelope === 'string') {\n    try {\n      envelope = JSON.parse(envelope);          // -> { data: {...} }\n    } catch (e) {\n      throw new Error(`Invalid requisition JSON: ${e.message}`);\n    }\n  }\n\n  const requisition = envelope?.data ?? envelope;\n  if (!requisition || typeof requisition !== 'object') continue;\n\n  const deptUrl = requisition?.relationships?.department?.links?.related;\n  if (!deptUrl) continue; // якщо немає URL — нічого не віддаємо\n\n  out.push({\n    json: {\n      key: 'department',\n      url: deptUrl,\n      jobId: requisition.id ?? null,\n      requisitionData: requisition, // передаємо далі по потоку\n    },\n  });\n}\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -976,
+        -640
+      ],
+      "id": "b5226253-b635-4f99-b895-258899dd39b8",
+      "name": "convert to json object1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1184,
+        -400
+      ],
+      "id": "318672e0-21de-42d4-8bb5-5b4a682e4851",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Build final employee payload with job offer data.\n * Enhanced version that uses offer data for salary and start date\n */\n\n// helpers\nconst toYmd = (d) => {\n  const y = d.getFullYear();\n  const m = String(d.getMonth() + 1).padStart(2, '0');\n  const day = String(d.getDate()).padStart(2, '0');\n  return `${y}-${m}-${day}`;\n};\n\n// Parse salary to extract numeric value and pay period\nconst parseSalaryInfo = (salaryStr) => {\n  if (!salaryStr) return { amount: null, payPer: null };\n  \n  // If it's already a number, assume yearly\n  if (typeof salaryStr === 'number') {\n    return { amount: salaryStr, payPer: 'Year' };\n  }\n  \n  // Parse strings like \"1500 USD/monthly\" or \"50000 USD/yearly\"\n  const salaryString = salaryStr.toString();\n  const amountMatch = salaryString.match(/[\\d,]+/);\n  const amount = amountMatch ? parseInt(amountMatch[0].replace(/,/g, '')) : null;\n  \n  // Determine pay period\n  let payPer = 'Year'; // Default\n  if (salaryString.toLowerCase().includes('month')) {\n    payPer = 'Month';\n  } else if (salaryString.toLowerCase().includes('week')) {\n    payPer = 'Week';\n  } else if (salaryString.toLowerCase().includes('hour')) {\n    payPer = 'Hour';\n  } else if (salaryString.toLowerCase().includes('day')) {\n    payPer = 'Day';\n  }\n  \n  return { amount, payPer };\n};\n\n// sources\nconst deptItems = $input.all(); // parsed department responses\nconst webhook   = $('Webhook').first().json.body;\nconst offerData = $('Process Job Offers').first().json;\n\n// requisition: read directly from HTTP node\nlet reqEnv = null;\ntry {\n  const raw = $('HTTP Request to TeamTailor Show the Job Requisition').first().json.data;\n  if (typeof raw === 'string') reqEnv = JSON.parse(raw);\n  else if (raw && typeof raw === 'object') reqEnv = raw;\n} catch (e) {\n  console.warn('Requisition parse failed:', e.message);\n}\nconst requisition = reqEnv?.data ?? null;\nconst reqAttrs   = requisition?.attributes ?? {};\nconst cfa        = reqAttrs['custom-form-answers'] ?? {};\n\n// department name from input items\nlet departmentName = null;\nfor (const it of deptItems) {\n  const j = it.json;\n  if (j?.data?.type === 'departments' && j.data?.attributes?.name) {\n    departmentName = j.data.attributes.name; break;\n  }\n  if (j?.type === 'departments' && j?.attributes?.name) {\n    departmentName = j.attributes.name; break;\n  }\n}\n\n// team/division & level\nconst teamName       = cfa.team ?? null;\nconst candidateLevel = cfa.level_of_candidate ?? null;\nconst reqTitle       = reqAttrs['job-title'] ?? null;\n\n// job title with level prefix\nlet jobTitle = webhook.job_title || reqTitle || null;\nif (candidateLevel && jobTitle) jobTitle = `${candidateLevel} ${jobTitle}`.trim();\n\n// Use offer start date if available, otherwise fall back to updated_at\nlet hireDate = null;\nif (offerData.found && offerData.startDate) {\n  // Use start date from offer\n  hireDate = offerData.startDate;\n} else {\n  // Fallback to candidate/webhook updated_at\n  const updCandidate = webhook?.candidate?.updated_at;\n  const updWebhook   = webhook?.updated_at;\n  \n  if (updCandidate)      hireDate = toYmd(new Date(updCandidate));\n  else if (updWebhook)   hireDate = toYmd(new Date(updWebhook));\n  else                   hireDate = toYmd(new Date());\n}\n\n// Extract salary and pay period from offer if available\nlet salaryInfo = { amount: null, payPer: null };\nif (offerData.found && offerData.salary) {\n  salaryInfo = parseSalaryInfo(offerData.salary);\n}\n\n// candidate basics\nconst cand = webhook.candidate || {};\nconst employee = {\n  firstName: cand.first_name || null,\n  lastName : cand.last_name  || null,\n  jobTitle,\n  hireDate,\n  email    : cand.email || null,\n  // Add salary and pay period if available from offer\n  salary   : salaryInfo.amount,\n  payPer   : salaryInfo.payPer,\n  // Employment status based on offer status\n  employmentStatus: (offerData.found && offerData.status === 'accepted') ? 'Active' : 'Pending',\n  // Add offer tracking\n  offerStatus: offerData.status || 'no_offer',\n  offerId: offerData.offerId || null\n};\n\nif (departmentName) employee.department = departmentName;\nif (teamName)       employee.division   = teamName;\nif (cand.phone)     employee.phone      = cand.phone;\n\n// Add debugging info\nconsole.log('Offer Data:', offerData);\nconsole.log('Salary Info:', salaryInfo);\nconsole.log('Employee Payload:', employee);\n\nreturn [{ json: employee }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        -640
+      ],
+      "id": "4b76c685-4c66-4a2f-9880-55b1ab0c9f96",
+      "name": "Build Employee Payload"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.teamtailor.com/v1/jobs/{{ $json.body.job_id }}/requisition",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Version",
+              "value": "20240404"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1184,
+        -640
+      ],
+      "id": "1f04fbff-1aa8-4cae-b88e-c7b216b45f43",
+      "name": "HTTP Request to TeamTailor Show the Job Requisition",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "JNoBFOypI7HysyPY",
+          "name": "TeamTailor"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "companyDomain",
+              "stringValue": "viragames"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b8dce1e7-0fbc-4f40-a556-f5f58c0241f6",
+      "name": "Set Company Domain",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        -144,
+        -640
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $json.companyDomain }}.bamboohr.com/api/v1/meta/lists",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e62437b7-fb54-47e4-9905-1a5d8ea5d1a5",
+      "name": "Get BambooHR Meta Fields",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        112,
+        -640
+      ],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "JNoBFOypI7HysyPY",
+          "name": "TeamTailor"
+        },
+        "httpBasicAuth": {
+          "id": "WuZbpCXJaiQvmIxb",
+          "name": "BambooHR Basic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node: Process Field Discovery (Alternative for Split Items)\n\n/***********************************************************************\n * 1. GET ALL ITEMS (when Split Into Items is ON)\n ***********************************************************************/\n// When \"Split Into Items\" is ON, we need to collect all items\nconst allItems = $input.all();\nconst metaFields = allItems.map(item => item.json);\n\n// The test employee data from the starting node.\nconst employeeData = $(\"Build Employee Payload\").all();\n\n/***********************************************************************\n * 2. VALIDATE THE INPUT DATA STRUCTURE\n ***********************************************************************/\nconsole.log(`Received ${metaFields.length} meta fields from BambooHR`);\n\n/***********************************************************************\n * 3. MAP FIELD NAMES TO IDs\n ***********************************************************************/\nconst fieldMapping = {};\n\nfor (const field of metaFields) {\n  // We only care about fields that can be managed via the API.\n  if (field.manageable !== 'yes') {\n    continue;\n  }\n\n  const id = parseInt(field.fieldId, 10);\n  const alias = (field.alias || '').toLowerCase();\n  const name = (field.name || '').toLowerCase();\n\n  // Use the 'alias' for primary matching when available\n  if (alias) {\n    switch (alias) {\n      case 'department':\n        fieldMapping.department = id;\n        break;\n      case 'division':\n        fieldMapping.division = id;\n        break;\n      case 'jobtitle':\n        fieldMapping.jobTitle = id;\n        break;\n      case 'location':\n        fieldMapping.location = id;\n        break;\n      case 'team':\n        fieldMapping.team = id;\n        break;\n      case 'customteams':\n        // Fallback for custom teams field\n        if (!fieldMapping.team) {\n          fieldMapping.team = id;\n        }\n        break;\n    }\n  }\n  \n  // Secondary check based on name if alias didn't match\n  if (!alias || !fieldMapping.jobTitle) {\n    if (name === 'job title' && !fieldMapping.jobTitle) {\n      fieldMapping.jobTitle = id;\n    }\n  }\n}\n\n/***********************************************************************\n * 4. DEBUG OUTPUT\n ***********************************************************************/\nconsole.log('Discovered field mappings:', JSON.stringify(fieldMapping, null, 2));\n\n// Log which fields we found and which we didn't\nconst expectedFields = ['department', 'division', 'jobTitle'];\nfor (const fieldName of expectedFields) {\n  if (fieldMapping[fieldName]) {\n    console.log(`✓ Found ${fieldName}: fieldId = ${fieldMapping[fieldName]}`);\n  } else {\n    console.warn(`✗ Could not find ${fieldName} field`);\n  }\n}\n\n/***********************************************************************\n * 5. FINAL OUTPUT\n ***********************************************************************/\nreturn [{\n  json: {\n    fieldMapping,\n    employeeData,\n    metaFields\n  }\n}];"
+      },
+      "id": "db0aa09c-8490-4742-aacb-0450d93e2157",
+      "name": "Process Field Discovery",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        -640
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const { fieldMapping, employeeData, metaFields } = $input.all()[0].json;\n\n// Function to find existing options for a field\nfunction getExistingOptions(fieldName) {\n  const fieldId = fieldMapping[fieldName];\n  if (!fieldId) return [];\n  \n  const field = metaFields.find(f => f.fieldId === fieldId);\n  return field ? field.options || [] : [];\n}\n\n// Function to check if option exists\nfunction optionExists(fieldName, optionValue) {\n  const options = getExistingOptions(fieldName);\n  return options.find(option => \n    (option.value || '').toLowerCase() === optionValue.toLowerCase() ||\n    (option.name || '').toLowerCase() === optionValue.toLowerCase()\n  );\n}\n\n// Check required organizational fields\nconst requiredFields = ['department', 'division', 'jobTitle'];\nconst validationResults = {};\nconst missingFields = [];\n\nfor (const fieldName of requiredFields) {\n  const fieldId = fieldMapping[fieldName];\n  const optionValue = employeeData[fieldName];\n  \n  if (!fieldId) {\n    validationResults[fieldName] = { \n      status: 'field_missing', \n      message: `Field ID not found for ${fieldName}` \n    };\n  } else if (!optionValue) {\n    validationResults[fieldName] = { \n      status: 'value_missing', \n      message: `No value provided for ${fieldName}` \n    };\n  } else {\n    const existingOption = optionExists(fieldName, optionValue);\n    if (existingOption) {\n      validationResults[fieldName] = {\n        status: 'exists',\n        option: existingOption,\n        fieldId: fieldId\n      };\n    } else {\n      validationResults[fieldName] = {\n        status: 'needs_creation',\n        value: optionValue,\n        fieldId: fieldId\n      };\n      missingFields.push(fieldName);\n    }\n  }\n}\n\nconsole.log('Validation results:', validationResults);\nconsole.log('Missing fields:', missingFields);\n\nreturn [{\n  json: {\n    validationResults: validationResults,\n    missingFields: missingFields,\n    fieldMapping: fieldMapping,\n    employeeData: employeeData,\n    metaFields: metaFields,\n    needsCreation: missingFields.length > 0\n  }\n}];"
+      },
+      "id": "459948e6-64d5-44d6-8d28-ce44d513efd1",
+      "name": "Validate Meta Field Options",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        -640
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.needsCreation }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "0c561195-7a73-4683-89f6-bdb893002fff",
+      "name": "Need to Create Fields?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        832,
+        -640
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const { missingFields, validationResults, metaFields, fieldMapping, employeeData } = $input.all()[0].json;\n\n// Create meta field options for missing fields\nconst creationPromises = [];\n\nfor (const fieldName of missingFields) {\n  const fieldId = validationResults[fieldName].fieldId;\n  const newValue = validationResults[fieldName].value;\n  \n  // Get existing options for the field\n  const field = metaFields.find(f => f.fieldId === fieldId);\n  const existingOptions = field ? field.options || [] : [];\n  \n  // Add new option to existing options - using the correct format that matches Python\n  const updatedOptions = [...existingOptions, { \"value\": newValue }];\n  \n  creationPromises.push({\n    fieldName: fieldName,\n    fieldId: fieldId,\n    newValue: newValue,\n    updatedOptions: updatedOptions\n  });\n}\n\nreturn creationPromises.map(item => ({ json: { ...item, employeeData, fieldMapping } }));"
+      },
+      "id": "dd77a845-92db-43b6-af41-cc13f4a60640",
+      "name": "Prepare Meta Field Creation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        -736
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://{{ $('Set Company Domain').first().json.companyDomain }}.bamboohr.com/api/v1/meta/lists/{{ $json.fieldId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\"options\": $json.updatedOptions} }}",
+        "options": {}
+      },
+      "id": "72d0013b-99cc-4525-875e-e72cf7ac493a",
+      "name": "Create Meta Field Option",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1264,
+        -736
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "WuZbpCXJaiQvmIxb",
+          "name": "BambooHR Basic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $('Set Company Domain').first().json.companyDomain }}.bamboohr.com/api/v1/meta/lists",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ebb2251b-12fb-40dc-91aa-4b91ef277dbf",
+      "name": "Refresh Meta Fields",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1120,
+        -528
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "WuZbpCXJaiQvmIxb",
+          "name": "BambooHR Basic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const { json: root } = $('Validate Meta Field Options').first();\n\n// Unwrap employee data\nconst employeeDataArr = root.employeeData;\nconst employeeData = Array.isArray(employeeDataArr)\n  ? (employeeDataArr[0]?.json || {})\n  : employeeDataArr;\n\n// Field mapping / meta-field options\nconst fieldMapping = root.fieldMapping;\nconst allItems      = $input.all();\nconst updatedMetaFields = (allItems.length === 1 && Array.isArray(allItems[0].json))\n  ? allItems[0].json           // full array came in a single item\n  : allItems.map(i => i.json); // split items\n\nfunction getOptionId(fieldName, optionValue) {\n  const fieldId = fieldMapping[fieldName];\n  if (!fieldId) return null;\n\n  const field = updatedMetaFields.find(f => f.fieldId === fieldId);\n  if (!field || !field.options) return null;\n\n  const opt = field.options.find(o =>\n    (o.value || '').toLowerCase() === optionValue.toLowerCase() ||\n    (o.name  || '').toLowerCase() === optionValue.toLowerCase()\n  );\n  return opt?.id ?? null;\n}\n\n// Build enhanced payload with offer data\nconst employeePayload = {\n  firstName: employeeData.firstName,\n  lastName:  employeeData.lastName,\n  workEmail: employeeData.email,\n  hireDate:  employeeData.hireDate,\n  employmentHistoryStatus: employeeData.employmentStatus || 'Full-Time',\n  payType:  'Salary',\n  payPer:   employeeData.payPer || 'Year', // Use dynamic pay period from offer\n  exempt:   employeeData.exempt   || 'Exempt',\n  location: employeeData.location || 'Remote',\n};\n\n// Add salary if available from offer\nif (employeeData.salary) {\n  employeePayload.payRate = employeeData.salary;\n}\n\n// Add phone if available\nif (employeeData.phone) {\n  employeePayload.mobilePhone = employeeData.phone;\n}\n\n// Hybrid organisational fields\n['department', 'division', 'jobTitle'].forEach(field => {\n  if (employeeData[field]) {\n    employeePayload[field] = employeeData[field];\n    const id = getOptionId(field, employeeData[field]);\n    if (id) employeePayload[`${field}Id`] = id;\n  }\n});\n\n// Add custom fields for offer tracking\nif (employeeData.offerId) {\n  employeePayload.customOfferId = employeeData.offerId;\n}\nif (employeeData.offerStatus) {\n  employeePayload.customOfferStatus = employeeData.offerStatus;\n}\n\nconsole.log('Enhanced employee payload:', employeePayload);\n\nreturn [\n  {\n    json: {\n      employeePayload,\n      originalData: employeeData,\n      offerData: {\n        offerId: employeeData.offerId,\n        offerStatus: employeeData.offerStatus,\n        salary: employeeData.salary,\n        hireDate: employeeData.hireDate\n      }\n    }\n  }\n];"
+      },
+      "id": "5af204fd-d8dd-4cea-abd1-e66b87597c56",
+      "name": "Prepare Employee Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        -528
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://{{ $('Set Company Domain').first().json.companyDomain }}.bamboohr.com/api/v1/employees",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.employeePayload }}",
+        "options": {}
+      },
+      "id": "c2b9699a-457a-4cf3-a1bf-93f9e9678dce",
+      "name": "Create Employee",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1504,
+        -528
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "WuZbpCXJaiQvmIxb",
+          "name": "BambooHR Basic Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.all()[0];\nconst employeeData = $('Prepare Employee Data').first().json;\nconst companyDomain = $('Set Company Domain').first().json.companyDomain;\n\n// Extract employee ID from Location header if available\nlet employeeId = null;\nif (response.headers && response.headers.location) {\n  const locationMatch = response.headers.location.match(/\\/employees\\/(\\d+)/);\n  if (locationMatch) {\n    employeeId = parseInt(locationMatch[1]);\n  }\n}\n\nreturn [{\n  json: {\n    success: true,\n    message: \"Employee created successfully with offer data\",\n    employee: {\n      id: employeeId,\n      name: `${employeeData.originalData.firstName} ${employeeData.originalData.lastName}`,\n      email: employeeData.originalData.email,\n      department: employeeData.originalData.department,\n      division: employeeData.originalData.division,\n      jobTitle: employeeData.originalData.jobTitle,\n      hireDate: employeeData.originalData.hireDate,\n      salary: employeeData.originalData.salary\n    },\n    offerData: employeeData.offerData,\n    bambooHrUrl: employeeId ? \n      `https://${companyDomain}.bamboohr.com/employees/${employeeId}` : null,\n    createdAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "3fc8028a-d2dd-4a5d-8d21-13dfe88f5953",
+      "name": "Process Success Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        -528
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C097URH3622",
+          "mode": "list",
+          "cachedResultName": "onboarding"
+        },
+        "text": "={{ `🎉 *New Employee Created Successfully!*\n\n*Name:* ${$json[\"employee\"][\"name\"]}\n*Email:* ${$json[\"employee\"][\"email\"]}\n*Department:* ${$json[\"employee\"][\"department\"]}\n*Job Title:* ${$json[\"employee\"][\"jobTitle\"]}\n*Hire Date:* ${$json[\"employee\"][\"hireDate\"]}\n*Salary:* ${$json[\"employee\"][\"salary\"] ? '$' + $json[\"employee\"][\"salary\"] + ' USD/year' : 'Not specified'}\n\n*Offer Data:*\n• Offer ID: ${$json[\"offerData\"][\"offerId\"] || 'N/A'}\n• Offer Status: ${$json[\"offerData\"][\"offerStatus\"] || 'N/A'}\n\n*Created At:* ${new Date($json[\"createdAt\"]).toLocaleString(\"en-GB\", { timeZone: \"UTC\" })}\n\nStatus: ${$json[\"message\"]}\n` }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1856,
+        -528
+      ],
+      "id": "db198d47-02f2-4672-816e-a5a11b50d3bc",
+      "name": "Send Notification – Employee Created",
+      "webhookId": "7691f4d7-a798-4508-b88d-cd3ad73230ed",
+      "credentials": {
+        "slackApi": {
+          "id": "h4hYe6hY0YHsd0no",
+          "name": "Vira Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Hired",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hired": {
+      "main": [
+        [
+          {
+            "node": "Fetch All Job Offers (Paginated)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request to TeamTailor Show the Job Requisition",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch All Job Offers (Paginated)": {
+      "main": [
+        [
+          {
+            "node": "Process Job Offers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "convert to json object": {
+      "main": [
+        [
+          {
+            "node": "Build Employee Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "convert to json object",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "convert to json object1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Employee Payload": {
+      "main": [
+        [
+          {
+            "node": "Set Company Domain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request to TeamTailor Show the Job Requisition": {
+      "main": [
+        [
+          {
+            "node": "convert to json object1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Company Domain": {
+      "main": [
+        [
+          {
+            "node": "Get BambooHR Meta Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get BambooHR Meta Fields": {
+      "main": [
+        [
+          {
+            "node": "Process Field Discovery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Field Discovery": {
+      "main": [
+        [
+          {
+            "node": "Validate Meta Field Options",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Meta Field Options": {
+      "main": [
+        [
+          {
+            "node": "Need to Create Fields?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Need to Create Fields?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Meta Field Creation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Refresh Meta Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Meta Field Creation": {
+      "main": [
+        [
+          {
+            "node": "Create Meta Field Option",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Meta Field Option": {
+      "main": [
+        [
+          {
+            "node": "Refresh Meta Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refresh Meta Fields": {
+      "main": [
+        [
+          {
+            "node": "Prepare Employee Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Employee Data": {
+      "main": [
+        [
+          {
+            "node": "Create Employee",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Employee": {
+      "main": [
+        [
+          {
+            "node": "Process Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Success Response": {
+      "main": [
+        [
+          {
+            "node": "Send Notification – Employee Created",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "production-teamtailor-bamboohr-with-offers-paginated"
+  }
+}

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Встановлення - HR Integration System</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/docs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-sync-alt"></i>
+                <span>HR Integration System</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Головна</a></li>
+                <li><a href="index.html#features" class="nav-link">Можливості</a></li>
+                <li><a href="index.html#architecture" class="nav-link">Архітектура</a></li>
+                <li><a href="index.html#scenarios" class="nav-link">Сценарії</a></li>
+                <li><a href="setup.html" class="nav-link active">Встановлення</a></li>
+                <li><a href="docs.html" class="nav-link">Документація</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Documentation Layout -->
+    <div class="docs-container">
+        <!-- Sidebar -->
+        <aside class="docs-sidebar">
+            <div class="sidebar-section">
+                <h3>Швидкий старт</h3>
+                <ul>
+                    <li><a href="#requirements" class="sidebar-link active">Вимоги</a></li>
+                    <li><a href="#access" class="sidebar-link">Отримання доступу</a></li>
+                    <li><a href="#verification" class="sidebar-link">Перевірка системи</a></li>
+                    <li><a href="#first-run" class="sidebar-link">Перший запуск</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>Налаштування</h3>
+                <ul>
+                    <li><a href="#n8n-setup" class="sidebar-link">n8n платформа</a></li>
+                    <li><a href="#credentials" class="sidebar-link">API ключі</a></li>
+                    <li><a href="#webhooks" class="sidebar-link">Webhooks</a></li>
+                    <li><a href="#notion-setup" class="sidebar-link">Notion бази</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>Тестування</h3>
+                <ul>
+                    <li><a href="#test-sync" class="sidebar-link">Тест синхронізації</a></li>
+                    <li><a href="#test-hiring" class="sidebar-link">Тест найму</a></li>
+                    <li><a href="#monitoring" class="sidebar-link">Моніторинг</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-main">
+            <!-- Requirements Section -->
+            <section id="requirements" class="docs-section">
+                <h1>🚀 Інструкція встановлення та запуску</h1>
+                
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <strong>Система вже налаштована!</strong>
+                        <p>Всі необхідні компоненти вже встановлені та готові до роботи. Вам потрібно лише отримати доступи.</p>
+                    </div>
+                </div>
+
+                <h2>📋 Системні вимоги</h2>
+                
+                <div class="requirement-cards">
+                    <div class="req-card">
+                        <div class="req-icon">
+                            <i class="fas fa-cloud"></i>
+                        </div>
+                        <h3>n8n Cloud</h3>
+                        <p>Доступ до інстансу</p>
+                        <code>viragamesinc.app.n8n.cloud</code>
+                    </div>
+                    <div class="req-card">
+                        <div class="req-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>TeamTailor</h3>
+                        <p>API ключ з правами читання/запису</p>
+                        <span class="badge badge-success">Налаштовано</span>
+                    </div>
+                    <div class="req-card">
+                        <div class="req-icon">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <h3>BambooHR</h3>
+                        <p>API ключ адміністратора</p>
+                        <span class="badge badge-success">Налаштовано</span>
+                    </div>
+                    <div class="req-card">
+                        <div class="req-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Notion</h3>
+                        <p>Integration token</p>
+                        <span class="badge badge-success">Налаштовано</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Access Section -->
+            <section id="access" class="docs-section">
+                <h2>🔐 Отримання доступу</h2>
+                
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Доступ до n8n</h3>
+                            <p>Запросіть доступ до n8n інстансу у адміністратора:</p>
+                            <pre><code class="language-bash">URL: https://viragamesinc.app.n8n.cloud
+Email: ваш_email@viragames.com</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Перевірка workflows</h3>
+                            <p>Після входу переконайтесь, що бачите 3 workflows:</p>
+                            <ul class="checklist">
+                                <li><i class="fas fa-check"></i> Scenario 1: Department Sync</li>
+                                <li><i class="fas fa-check"></i> Scenario 2: Job Requisition</li>
+                                <li><i class="fas fa-check"></i> Scenario 3: Employee Creation</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Slack канал</h3>
+                            <p>Приєднайтесь до каналу для отримання повідомлень:</p>
+                            <code>#hr-automation-notifications</code>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Verification Section -->
+            <section id="verification" class="docs-section">
+                <h2>✅ Перевірка системи</h2>
+                
+                <div class="verification-grid">
+                    <div class="verify-item">
+                        <h3>1. Статус Workflows</h3>
+                        <p>Відкрийте кожен workflow та перевірте:</p>
+                        <pre><code class="language-javascript">// Має бути "Active"
+Status: Active ✅
+
+// Credentials підключені
+TeamTailor API: Connected ✅
+BambooHR API: Connected ✅
+Notion API: Connected ✅</code></pre>
+                    </div>
+                    
+                    <div class="verify-item">
+                        <h3>2. Webhook URLs</h3>
+                        <p>Перевірте налаштування webhook в TeamTailor:</p>
+                        <pre><code class="language-bash"># Webhook endpoint
+https://viragamesinc.app.n8n.cloud/webhook/teamtailor-hired
+
+# Events
+candidate.hired ✅</code></pre>
+                    </div>
+                    
+                    <div class="verify-item">
+                        <h3>3. Notion Databases</h3>
+                        <p>Переконайтесь у наявності баз даних:</p>
+                        <ul class="database-list">
+                            <li><i class="fas fa-database"></i> Job Requisitions</li>
+                            <li><i class="fas fa-database"></i> Departments</li>
+                            <li><i class="fas fa-database"></i> Roles</li>
+                            <li><i class="fas fa-database"></i> Teams</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- First Run Section -->
+            <section id="first-run" class="docs-section">
+                <h2>🎯 Перший запуск</h2>
+                
+                <div class="run-scenarios">
+                    <div class="scenario-run">
+                        <div class="scenario-header">
+                            <h3>Сценарій 1: Синхронізація департаментів</h3>
+                            <span class="run-type manual">Ручний запуск</span>
+                        </div>
+                        <div class="scenario-steps">
+                            <ol>
+                                <li>Відкрийте workflow "Department Sync"</li>
+                                <li>Натисніть кнопку <button class="btn-demo">Execute Workflow</button></li>
+                                <li>Дочекайтесь завершення (1-2 хв)</li>
+                                <li>Перевірте результат в Notion</li>
+                            </ol>
+                        </div>
+                        <div class="expected-result">
+                            <strong>Очікуваний результат:</strong>
+                            <p>Всі департаменти синхронізовані між системами</p>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-run">
+                        <div class="scenario-header">
+                            <h3>Сценарій 2: Тестова вакансія</h3>
+                            <span class="run-type auto">Автоматичний</span>
+                        </div>
+                        <div class="scenario-steps">
+                            <ol>
+                                <li>Створіть тестову вакансію в Notion</li>
+                                <li>Заповніть всі обов'язкові поля</li>
+                                <li>Натисніть кнопку "Sync to TeamTailor"</li>
+                                <li>Перевірте Slack для підтвердження</li>
+                            </ol>
+                        </div>
+                        <div class="expected-result">
+                            <strong>Очікуваний результат:</strong>
+                            <p>Вакансія створена в TeamTailor, ID збережено в Notion</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- n8n Setup Section -->
+            <section id="n8n-setup" class="docs-section">
+                <h2>⚙️ Налаштування n8n</h2>
+                
+                <div class="config-block">
+                    <h3>Основні параметри</h3>
+                    <pre><code class="language-json">{
+  "instanceUrl": "https://viragamesinc.app.n8n.cloud",
+  "timezone": "Europe/Kiev",
+  "executionTimeout": 300,
+  "maxExecutionTime": 600
+}</code></pre>
+                </div>
+                
+                <div class="config-block">
+                    <h3>Розклад запуску workflows</h3>
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Workflow</th>
+                                <th>Тип запуску</th>
+                                <th>Розклад</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Department Sync</td>
+                                <td>Cron</td>
+                                <td>Щонеділі о 09:00</td>
+                                <td><span class="status-badge active">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Job Requisition</td>
+                                <td>Manual/API</td>
+                                <td>При створенні в Notion</td>
+                                <td><span class="status-badge active">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Employee Creation</td>
+                                <td>Webhook</td>
+                                <td>При події "hired"</td>
+                                <td><span class="status-badge active">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Monitoring Section -->
+            <section id="monitoring" class="docs-section">
+                <h2>📊 Моніторинг системи</h2>
+                
+                <div class="monitoring-grid">
+                    <div class="monitor-card">
+                        <h3>Логи виконання</h3>
+                        <p>Перегляд історії запусків:</p>
+                        <ol>
+                            <li>Відкрийте workflow</li>
+                            <li>Натисніть "Executions"</li>
+                            <li>Фільтруйте за статусом</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="monitor-card">
+                        <h3>Slack алерти</h3>
+                        <p>Типи повідомлень:</p>
+                        <ul>
+                            <li>✅ Успішні операції</li>
+                            <li>⚠️ Попередження</li>
+                            <li>❌ Помилки</li>
+                            <li>📊 Статистика</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="monitor-card">
+                        <h3>Метрики</h3>
+                        <p>Ключові показники:</p>
+                        <div class="metrics">
+                            <div class="metric">
+                                <span class="metric-label">Успішність</span>
+                                <span class="metric-value">98%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Середній час</span>
+                                <span class="metric-value">2.3 хв</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Troubleshooting Preview -->
+            <section class="docs-section">
+                <h2>🔧 Швидке вирішення проблем</h2>
+                
+                <div class="troubleshooting-preview">
+                    <div class="issue-card">
+                        <h4>Webhook не спрацьовує</h4>
+                        <p>Перевірте URL та події в TeamTailor settings</p>
+                        <a href="troubleshooting.html#webhook-issues" class="learn-more">Детальніше →</a>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Помилка API</h4>
+                        <p>Перевірте валідність ключів та permissions</p>
+                        <a href="troubleshooting.html#api-errors" class="learn-more">Детальніше →</a>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Дублікати даних</h4>
+                        <p>Запустіть дедуплікацію в Notion</p>
+                        <a href="troubleshooting.html#duplicates" class="learn-more">Детальніше →</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h4>HR Integration System</h4>
+                    <p>Розроблено для Vira Games</p>
+                </div>
+                <div class="footer-nav">
+                    <a href="docs.html">Документація</a>
+                    <a href="troubleshooting.html">Troubleshooting</a>
+                    <a href="https://github.com">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/docs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+</body>
+</html>

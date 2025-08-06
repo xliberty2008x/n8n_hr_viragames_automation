@@ -1,0 +1,480 @@
+[
+    {
+      "headers": {
+        "host": "viragamesinc.app.n8n.cloud",
+        "user-agent": "NotionAutomation",
+        "content-length": "12115",
+        "accept-encoding": "gzip, br",
+        "baggage": "sentry-environment=production,sentry-release=0.0.4062,sentry-public_key=529a6d1990e5471d874257842c4f4ad8,sentry-trace_id=3fc3817ab981407595f34b0813d21ccf",
+        "cdn-loop": "cloudflare; loops=1; subreqs=1",
+        "cf-connecting-ip": "44.227.140.35",
+        "cf-ew-via": "15",
+        "cf-ipcountry": "US",
+        "cf-ray": "969e98f494915ec8-PDX",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "cf-worker": "n8n.cloud",
+        "content-type": "application/json",
+        "sentry-trace": "3fc3817ab981407595f34b0813d21ccf-b9017fc8049efbb3",
+        "traceparent": "00-a1331cba487f227e31a512ffb958959e-f4f765f3736092ab-00",
+        "x-forwarded-for": "44.227.140.35, 172.68.175.24",
+        "x-forwarded-host": "viragamesinc.app.n8n.cloud",
+        "x-forwarded-port": "443",
+        "x-forwarded-proto": "https",
+        "x-forwarded-server": "traefik-prod-users-gwc-33-6b64989c5-s7rlk",
+        "x-is-trusted": "yes",
+        "x-real-ip": "44.227.140.35"
+      },
+      "params": {},
+      "query": {},
+      "body": {
+        "source": {
+          "type": "automation",
+          "automation_id": "21c9748b-c8c2-80c2-8ebf-004db7d71fbb",
+          "action_id": "21c9748b-c8c2-8026-9e5f-005a925837d6",
+          "event_id": "a4a21eb6-3a2e-4b9b-91d7-8bf56e1d8a0c",
+          "user_id": "17a07c74-6798-487a-bad8-17440bc4542a",
+          "attempt": 1
+        },
+        "data": {
+          "object": "page",
+          "id": "2459748b-c8c2-80c4-9ba7-e3fa2facbfc5",
+          "created_time": "2025-08-04T10:05:00.000Z",
+          "last_edited_time": "2025-08-04T14:03:00.000Z",
+          "created_by": {
+            "object": "user",
+            "id": "17a07c74-6798-487a-bad8-17440bc4542a"
+          },
+          "last_edited_by": {
+            "object": "user",
+            "id": "17a07c74-6798-487a-bad8-17440bc4542a"
+          },
+          "cover": null,
+          "icon": null,
+          "parent": {
+            "type": "database_id",
+            "database_id": "21c9748b-c8c2-802e-8cf1-caa3257b046a"
+          },
+          "archived": false,
+          "in_trash": false,
+          "properties": {
+            "Role*": {
+              "id": "%3C%7CeD",
+              "type": "relation",
+              "relation": [
+                {
+                  "id": "23e9748b-c8c2-8047-8b87-fa01f2670612"
+                }
+              ],
+              "has_more": false
+            },
+            "Country*": {
+              "id": "%40dZp",
+              "type": "select",
+              "select": {
+                "id": "6271d1a8-7562-4d97-a9fb-20a0e33d2ef6",
+                "name": "Ukraine",
+                "color": "blue"
+              }
+            },
+            "Role status": {
+              "id": "Aork",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [
+                  {
+                    "type": "status",
+                    "status": {
+                      "id": "202b99e1-9310-43d3-b517-730d61acea84",
+                      "name": "Verified",
+                      "color": "green"
+                    }
+                  }
+                ],
+                "function": "show_original"
+              }
+            },
+            "Job Description": {
+              "id": "Eem%3D",
+              "type": "rich_text",
+              "rich_text": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Key skills:\n- 2-3 years of experience as a System/IT Administrator.\n- Experience implementing IAM (Identity and Access Management)/ SaaS(",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Key skills:\n- 2-3 years of experience as a System/IT Administrator.\n- Experience implementing IAM (Identity and Access Management)/ SaaS(",
+                  "href": null
+                },
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "\"Software as a Service\"",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": true,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "\"Software as a Service\"",
+                  "href": null
+                },
+                {
+                  "type": "text",
+                  "text": {
+                    "content": " ) Management systems.\n- Understanding of the principles of information security and access control.\n- Knowledge of password and access accounting tools (1Password, Torii, Okta, etc.).\n- Confident use of Google Workspace, Slack, Notion, Gitlab, etc. systems\n- Skills in documenting processes, creating instructions and guidelines.\n- Proactivity, systems thinking, attention to detail.\n- Basic knowledge of bash/Python/Google Apps Script or working with no-code/low-code platforms (Zapier, Make, N8N).\n\nKey Responsibilities: \n- Setting up and managing a centralized access database and the logic of their request/issue/revocation. Setting up automatic flows for issuing a request/issue/revocation.\n- Monitoring the use of company tool licenses by all teams and departments, monitoring costs.\n- Access security control and system configuration to comply with internal security policies and standards.\n- Company tool management. Search, Integration, configuration and support for the operability of company tools.\n- Ensuring synchronization of systems (HRIS, ATS, Performance Management)\n- Developing IT policies: security, access, passwords, standards for handling equipment.\n- Keeping records of equipment: purchasing, issuing, returning.\n- Collaborating with HR, operations and product teams to configure processes.\n- Developing and supporting technical instructions, guides, request templates.\n- Providing technical support on access issues, accounts, equipment operation.\n- Identifying and responding to potential security incidents.\n- Conducting an audit of access, passwords, tools and equipment.",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": " ) Management systems.\n- Understanding of the principles of information security and access control.\n- Knowledge of password and access accounting tools (1Password, Torii, Okta, etc.).\n- Confident use of Google Workspace, Slack, Notion, Gitlab, etc. systems\n- Skills in documenting processes, creating instructions and guidelines.\n- Proactivity, systems thinking, attention to detail.\n- Basic knowledge of bash/Python/Google Apps Script or working with no-code/low-code platforms (Zapier, Make, N8N).\n\nKey Responsibilities: \n- Setting up and managing a centralized access database and the logic of their request/issue/revocation. Setting up automatic flows for issuing a request/issue/revocation.\n- Monitoring the use of company tool licenses by all teams and departments, monitoring costs.\n- Access security control and system configuration to comply with internal security policies and standards.\n- Company tool management. Search, Integration, configuration and support for the operability of company tools.\n- Ensuring synchronization of systems (HRIS, ATS, Performance Management)\n- Developing IT policies: security, access, passwords, standards for handling equipment.\n- Keeping records of equipment: purchasing, issuing, returning.\n- Collaborating with HR, operations and product teams to configure processes.\n- Developing and supporting technical instructions, guides, request templates.\n- Providing technical support on access issues, accounts, equipment operation.\n- Identifying and responding to potential security incidents.\n- Conducting an audit of access, passwords, tools and equipment.",
+                  "href": null
+                }
+              ]
+            },
+            "Additional Comments for Recruiter or Approval": {
+              "id": "Ff%3BM",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Team*": {
+              "id": "G_o%5D",
+              "type": "relation",
+              "relation": [
+                {
+                  "id": "1989748b-c8c2-8043-9162-e67c22384eee"
+                }
+              ],
+              "has_more": false
+            },
+            "Desire start Day of newcomer*": {
+              "id": "J%3C%60s",
+              "type": "date",
+              "date": {
+                "start": "2025-08-31",
+                "end": null,
+                "time_zone": null
+              }
+            },
+            "Min Salary": {
+              "id": "Qgea",
+              "type": "number",
+              "number": 1500
+            },
+            "Salary Period*": {
+              "id": "SbuN",
+              "type": "select",
+              "select": {
+                "id": "6c69eb15-b825-45f7-94a2-ff84d9531831",
+                "name": "Monthly",
+                "color": "purple"
+              }
+            },
+            "Max Salary": {
+              "id": "SuVS",
+              "type": "number",
+              "number": 2000
+            },
+            "Department*": {
+              "id": "WpZP",
+              "type": "relation",
+              "relation": [
+                {
+                  "id": "1929748b-c8c2-804e-9a8d-d9f3506fbd3a"
+                }
+              ],
+              "has_more": false
+            },
+            "Fixed Salary": {
+              "id": "XzZN",
+              "type": "number",
+              "number": null
+            },
+            "Location*": {
+              "id": "YW%3Ex",
+              "type": "select",
+              "select": {
+                "id": "455809e5-e6bf-4313-85f9-3c7f0af59f8b",
+                "name": "Europe (Remote)",
+                "color": "yellow"
+              }
+            },
+            "Will there be a test task?": {
+              "id": "%5Eudy",
+              "type": "select",
+              "select": {
+                "id": "e9c73020-329a-4dbe-b284-fb3070e64b0e",
+                "name": "No",
+                "color": "blue"
+              }
+            },
+            "Expected number of hires*": {
+              "id": "%60CwR",
+              "type": "number",
+              "number": 1
+            },
+            "Department status": {
+              "id": "attf",
+              "type": "rollup",
+              "rollup": {
+                "type": "array",
+                "array": [
+                  {
+                    "type": "status",
+                    "status": {
+                      "id": "s}Wb",
+                      "name": "Verified",
+                      "color": "green"
+                    }
+                  }
+                ],
+                "function": "show_original"
+              }
+            },
+            "Hiring process end date": {
+              "id": "ei%3Dg",
+              "type": "date",
+              "date": null
+            },
+            "Info hiring stages": {
+              "id": "kVA%3C",
+              "type": "formula",
+              "formula": {
+                "type": "string",
+                "string": "Standard hiring stages:\n1. CV Screening Recruiter\n2. Manager CV Screen\n3. Recruiting Interview\n4. Task (if needed)\n5. Manager's Interview\n6. Offer"
+              }
+            },
+            "Level of Candidate*": {
+              "id": "niOG",
+              "type": "select",
+              "select": {
+                "id": "28e6e4b2-2ff7-4df9-8065-e8d1101f20fe",
+                "name": "Middle",
+                "color": "default"
+              }
+            },
+            "Reason*": {
+              "id": "qPJw",
+              "type": "multi_select",
+              "multi_select": [
+                {
+                  "id": "d67c978a-9074-4706-83fc-019a6540cd62",
+                  "name": "New Function or Capability Needed",
+                  "color": "green"
+                }
+              ]
+            },
+            "Checking info": {
+              "id": "spWw",
+              "type": "formula",
+              "formula": {
+                "type": "string",
+                "string": "✅ All good - You can creating Requisition"
+              }
+            },
+            "Status": {
+              "id": "th%3D%3A",
+              "type": "status",
+              "status": {
+                "id": "20feb232-e3bf-4af1-9054-60ff9825b148",
+                "name": "Done",
+                "color": "green"
+              }
+            },
+            "Hiring process start date*": {
+              "id": "uYse",
+              "type": "date",
+              "date": {
+                "start": "2025-08-08",
+                "end": null,
+                "time_zone": null
+              }
+            },
+            "Key Competencies for position": {
+              "id": "wGNM",
+              "type": "rich_text",
+              "rich_text": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "- Setting up and managing a centralized access database and the logic of their request/issue/revocation. Setting up automatic flows for issuing a request/issue/revocation.\n- Monitoring the use of company tool licenses by all teams and departments, monitoring costs.\n- Access security control and system configuration to comply with internal security policies and standards.\n- Company tool management. Search, Integration, configuration and support for the operability of company tools.\n- Ensuring synchronization of systems (HRIS, ATS, Performance Management)\n- Developing IT policies: security, access, passwords, standards for handling equipment.\n- Keeping records of equipment: purchasing, issuing, returning.\n- Collaborating with HR, operations and product teams to configure processes.\n- Developing and supporting technical instructions, guides, request templates.\n- Providing technical support on access issues, accounts, equipment operation.\n- Identifying and responding to potential security incidents.\n- Conducting an audit of access, passwords, tools and equipment.",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "- Setting up and managing a centralized access database and the logic of their request/issue/revocation. Setting up automatic flows for issuing a request/issue/revocation.\n- Monitoring the use of company tool licenses by all teams and departments, monitoring costs.\n- Access security control and system configuration to comply with internal security policies and standards.\n- Company tool management. Search, Integration, configuration and support for the operability of company tools.\n- Ensuring synchronization of systems (HRIS, ATS, Performance Management)\n- Developing IT policies: security, access, passwords, standards for handling equipment.\n- Keeping records of equipment: purchasing, issuing, returning.\n- Collaborating with HR, operations and product teams to configure processes.\n- Developing and supporting technical instructions, guides, request templates.\n- Providing technical support on access issues, accounts, equipment operation.\n- Identifying and responding to potential security incidents.\n- Conducting an audit of access, passwords, tools and equipment.",
+                  "href": null
+                }
+              ]
+            },
+            "Please define hiring stages": {
+              "id": "wq%5DQ",
+              "type": "multi_select",
+              "multi_select": [
+                {
+                  "id": "2093f3fc-7360-4560-9822-ceae3325d9ff",
+                  "name": "1",
+                  "color": "blue"
+                },
+                {
+                  "id": "7fea8b5f-0063-4b3e-90dc-211e26729fb0",
+                  "name": "2",
+                  "color": "default"
+                },
+                {
+                  "id": "debbc959-dce0-4107-a093-340e68e2bcef",
+                  "name": "3",
+                  "color": "yellow"
+                },
+                {
+                  "id": "16e031d1-26ea-4432-be24-60c4a457d411",
+                  "name": "5",
+                  "color": "green"
+                },
+                {
+                  "id": "3effe485-d033-4aaf-8a67-849515fe6d5d",
+                  "name": "6",
+                  "color": "red"
+                }
+              ]
+            },
+            "Priority of position": {
+              "id": "yw%5C%3B",
+              "type": "select",
+              "select": {
+                "id": "be39a035-c621-432e-ae24-d8c94a3c9055",
+                "name": "2",
+                "color": "orange"
+              }
+            },
+            "Need salary range?": {
+              "id": "%7DPqO",
+              "type": "checkbox",
+              "checkbox": true
+            },
+            "Name": {
+              "id": "title",
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "IT Administrator",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "IT Administrator",
+                  "href": null
+                }
+              ]
+            },
+            "tt_requisition_id": {
+              "id": "o%3DUp",
+              "type": "rich_text",
+              "rich_text": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "338745",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "338745",
+                  "href": null
+                }
+              ]
+            },
+            "last_synced_at": {
+              "id": "%5D%3AYs",
+              "type": "date",
+              "date": {
+                "start": "2025-08-04T15:01:00.000+03:00",
+                "end": null,
+                "time_zone": null
+              }
+            },
+            "sync_error": {
+              "id": "jdnc",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Person": {
+              "id": "%3ETpG",
+              "type": "people",
+              "people": [
+                {
+                  "object": "user",
+                  "id": "17a07c74-6798-487a-bad8-17440bc4542a",
+                  "name": "Pavlo Andreichuk",
+                  "avatar_url": null,
+                  "type": "person",
+                  "person": {
+                    "email": "pavlo.andreichuk@vira.games"
+                  }
+                }
+              ]
+            },
+            "Role Competences": {
+              "id": "JZO%3A",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Role Mission": {
+              "id": "hqa%5E",
+              "type": "rich_text",
+              "rich_text": []
+            },
+            "Role Outcomes": {
+              "id": "H%3ACa",
+              "type": "rich_text",
+              "rich_text": []
+            }
+          },
+          "url": "https://www.notion.so/IT-Administrator-2459748bc8c280c49ba7e3fa2facbfc5",
+          "public_url": null,
+          "request_id": "b80deb82-e4eb-443e-a4f4-14704bed6561"
+        }
+      },
+      "webhookUrl": "https://viragamesinc.app.n8n.cloud/webhook/c9f718f4-4334-4c21-a559-c5f03caa33f4",
+      "executionMode": "production"
+    }
+  ]

@@ -1,0 +1,1621 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst parsedItems = items.map((item) => {\n  const parsedData = JSON.parse(item?.json?.data);\n  return { json: parsedData };\n});\nreturn parsedItems;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        928
+      ],
+      "id": "a407b339-335e-44fe-8198-46852a1ccfa4",
+      "name": "convert to json object4"
+    },
+    {
+      "parameters": {
+        "url": "https://api.teamtailor.com/v1/users",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "filter[email]",
+              "value": "={{ $('Slack Lookup by Email').item.json.user.profile.email }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Version",
+              "value": "20240404"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -704,
+        928
+      ],
+      "id": "9fb38a0c-1ba6-4da4-94b0-e881e12a1696",
+      "name": "HTTP Request Users",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "JNoBFOypI7HysyPY",
+          "name": "TeamTailor"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.teamtailor.com/v1/requisitions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Token token=rddtbCpJh6CBefTGkNTalKDdLOaVyVQ-3m86RcU7"
+            },
+            {
+              "name": "X-Api-Version",
+              "value": "20240404"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/vnd.api+json",
+        "body": "={{ $json.payload }}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        384
+      ],
+      "id": "ae089df3-1ac3-4a99-b6f8-be9146c8c417",
+      "name": "Create new requisition2",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Get Database Page by Id').item.json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "tt_requisition_id|rich_text",
+              "textContent": "={{ $json.data.parseJson().data.id }}"
+            },
+            {
+              "key": "Status|status",
+              "statusValue": "Done"
+            },
+            {
+              "key": "last_synced_at|date",
+              "date": "={{ $now.format('yyyy-MM-dd HH:mm') }}",
+              "timezone": "Europe/Kiev"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        2208,
+        224
+      ],
+      "id": "f0f9bd15-fc9d-43c8-a853-5032dfc33985",
+      "name": "Update Requisition Page",
+      "credentials": {
+        "notionApi": {
+          "id": "dvG81BygcxjHVM4C",
+          "name": "Manager's Home"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Get Database Page by Id').item.json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "last_synced_at|date",
+              "date": "={{ $now.format('yyyy-MM-dd HH:mm') }}",
+              "timezone": "Europe/Kiev"
+            },
+            {
+              "key": "sync_error|rich_text",
+              "textContent": "=🚨 *Notion - Opening a New Position*\n\n*Error Details:*\n• *Message:* {{ $json.error.message }}\n• *Status Code:* {{ $json.error.statusCode }}\n• *Timestamp:* {{ $json.error.timestamp }}\n{{ $json.error.details ? '• *Details:* ' + $json.error.details : '' }}\n\n*Workflow:* BambooHR Employee Creation\n*Execution ID:* {{ $execution.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        560
+      ],
+      "id": "55efc6fe-63f5-41e1-8549-d39ac5831271",
+      "name": "Update Requisition In Case Of An Error",
+      "credentials": {
+        "notionApi": {
+          "id": "dvG81BygcxjHVM4C",
+          "name": "Manager's Home"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a visually appealing Slack message to announce a new job opening from TeamTailor. The message should be formatted using Slack's Markdown and populated with the data from the following JSON object:\n\n*Return only ready for sent message without any of your comments or unrelated info*\n\"\"\"\"\n{{ $('Create new requisition2').item.json.data }}\n\"\"\"\"",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2608,
+        224
+      ],
+      "id": "67f148b6-fa92-4bbb-80e6-ee9eed0f3e04",
+      "name": "Prettify JSON object to MD text"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2944,
+        768
+      ],
+      "id": "cac65330-6f6f-43fd-9f06-4879c00c12ed",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "2kX9gdgCyRSPWTXu",
+          "name": "N8N_Test_Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a visually appealing Slack message to inform that some error occure during creat new requisition data from the following JSON object:\n\n\"\"\"\"\n\n{{ $('Process Error Response').all() }}\n\"\"\"\"",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2624,
+        560
+      ],
+      "id": "5249aafc-d879-4f49-bcb5-7205b534d9e4",
+      "name": "Prettify JSON object to MD text1"
+    },
+    {
+      "parameters": {
+        "url": "https://slack.com/api/users.lookupByEmail",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "slackApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "={{ $json.property_person[0] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1088,
+        928
+      ],
+      "id": "3040d5b9-837f-487b-8b3b-ca060d05e6f7",
+      "name": "Slack Lookup by Email",
+      "credentials": {
+        "slackApi": {
+          "id": "h4hYe6hY0YHsd0no",
+          "name": "Vira Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0875TW66M9",
+          "mode": "list",
+          "cachedResultName": "recruiting-team"
+        },
+        "text": "={{ $json.text }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        3248,
+        -48
+      ],
+      "id": "48060901-86a8-4cc5-9b65-25792c609795",
+      "name": "Send Message to recruit-team",
+      "webhookId": "25c8010f-de82-4b4c-b1ed-fe2633977d6f",
+      "credentials": {
+        "slackApi": {
+          "id": "h4hYe6hY0YHsd0no",
+          "name": "Vira Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "user",
+        "user": {
+          "__rl": true,
+          "value": "={{ $('Slack Lookup by Email').item.json.user.id }}",
+          "mode": "id"
+        },
+        "text": "={{ $json.text }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        3248,
+        352
+      ],
+      "id": "69f68081-b3d5-46d6-9302-5a208055a083",
+      "name": "Send Personal Message to Job Owner",
+      "webhookId": "8073afab-cc81-423e-aa89-2ff7281f95f6",
+      "credentials": {
+        "slackApi": {
+          "id": "h4hYe6hY0YHsd0no",
+          "name": "Vira Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.teamtailor.com/v1/requisitions/{{ $json.data.parseJson().data.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Token token=rddtbCpJh6CBefTGkNTalKDdLOaVyVQ-3m86RcU7"
+            },
+            {
+              "name": "X-Api-Version",
+              "value": "20240404"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/vnd.api+json",
+        "body": "={{ $('Assemble Body Universal').item.json.payload }}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        1168
+      ],
+      "id": "32f1db12-ed6b-40fc-a634-0da4ecf75f4c",
+      "name": "Update new requisition",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Get Database Page by Id').item.json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "last_synced_at|date",
+              "date": "={{ $now.format('yyyy-MM-dd HH:mm') }}",
+              "timezone": "Europe/Kiev"
+            },
+            {
+              "key": "sync_error|rich_text",
+              "textContent": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        2288,
+        1184
+      ],
+      "id": "0747c1a1-7c47-4720-a404-e4b09b59f590",
+      "name": "Update Requisition In Case Of An Error1",
+      "credentials": {
+        "notionApi": {
+          "id": "dvG81BygcxjHVM4C",
+          "name": "Manager's Home"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "user",
+        "user": {
+          "__rl": true,
+          "value": "={{ $('Slack Lookup by Email').item.json.user.id }}",
+          "mode": "id"
+        },
+        "text": "Job Requisition було успішно оновлено",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        2288,
+        960
+      ],
+      "id": "4bd4a42d-cdc6-457b-af5d-9c4cd5aff61d",
+      "name": "Send Personal Message to Job Owner1",
+      "webhookId": "8073afab-cc81-423e-aa89-2ff7281f95f6",
+      "credentials": {
+        "slackApi": {
+          "id": "h4hYe6hY0YHsd0no",
+          "name": "Vira Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Get Database Page by Id').item.json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "last_synced_at|date",
+              "date": "={{ $now.format('yyyy-MM-dd HH:mm') }}",
+              "timezone": "Europe/Kiev"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        2048,
+        960
+      ],
+      "id": "dc2bec4d-c142-4c50-8897-4ff79462e184",
+      "name": "Update Requisition Page1",
+      "credentials": {
+        "notionApi": {
+          "id": "dvG81BygcxjHVM4C",
+          "name": "Manager's Home"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "get",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $json.body.data.id }}",
+          "mode": "id"
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -1408,
+        928
+      ],
+      "id": "fbc72be2-880e-4409-9dc4-8c194e007496",
+      "name": "Get Database Page by Id",
+      "credentials": {
+        "notionApi": {
+          "id": "dvG81BygcxjHVM4C",
+          "name": "Manager's Home"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.isUpdate }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    },
+                    "id": "28c0ea03-1ef2-4b46-be52-9820f7501a7e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Create"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a1b332e4-ee93-44e5-a7bc-2aeb7fee16f1",
+                    "leftValue": "={{ $json.isUpdate }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Update"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        784,
+        928
+      ],
+      "id": "ba22877a-85ce-4baa-845c-e6ece1b51021",
+      "name": "Create or Update"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.teamtailor.com/v1/requisitions/{{ $json.payload.data.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Version",
+              "value": "20240404"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1024,
+        1168
+      ],
+      "id": "4f3a5086-7ff5-47d2-92bc-9bd292358d84",
+      "name": "Get The Requisition in TT",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "JNoBFOypI7HysyPY",
+          "name": "TeamTailor"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4169d208-77d5-4033-a89a-22fe84b71b59",
+              "leftValue": "={{ $json.data.parseJson().data.attributes['archived-at'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1264,
+        1168
+      ],
+      "id": "405781d8-29f9-4f44-bb03-09a994665103",
+      "name": "Check wether requisition archived or not"
+    },
+    {
+      "parameters": {
+        "jsCode": "/* ───── helpers ──────────────────────────────────────────────────────── */\nconst isoCountry = (label) => ({\n  Ukraine: 'UA',\n  Poland : 'PL',\n  Germany: 'DE',\n  'United States': 'US',\n}[label] || label);                 // fallback: use the label itself\n\n/* ───── gather inputs ───────────────────────────────────────────────── */\n// Get data from the simplified schema of Get Database Page by Id\nconst pageData = $('Get Database Page by Id').first().json;\n\n/* Notion look‑ups already performed upstream */\nconst deptNode  = $('Find Department page').first().json;\nconst roleNode  = $('Find Role page').first().json;\nconst teamNode  = $('Find Team page').first().json;\nconst userNode  = $('convert to json object4').first().json;\n\n/* IDs & names */\nconst ttId   = pageData.property_tt_requisition_id?.trim() || null;\nconst isUpdate = !!ttId;                           // ← create vs update\n\nconst departmentId = deptNode?.property_tt_department_id?.trim() || null;\nconst roleId       = roleNode?.property_tt_role_id?.trim()         || null;\nconst teamName     = teamNode?.name                                || null;\nconst userId       = userNode?.data?.[0]?.id?.trim()               || null;\n\n/* ───── salary logic ───────────────────────────────────────────────── */\nconst wantRange = pageData.property_need_salary_range ?? true;\nlet minSalary   = null;\nlet maxSalary   = null;\n\nif (wantRange) {\n  minSalary = pageData.property_min_salary ?? null;\n  maxSalary = pageData.property_max_salary ?? null;\n} else {\n  const fixed = pageData.property_fixed_salary ?? null;\n  if (fixed !== null) {\n    minSalary = fixed - 1;      // TT requires both even if equal\n    maxSalary = fixed;\n  }\n}\n\n/* ───── relationships ──────────────────────────────────────────────── */\nconst relationships = {\n  location:  { data: { id: '1200146', type: 'locations'  } },  // constant\n};\nif (departmentId) relationships.department = { data: { id: departmentId, type: 'departments' } };\nif (roleId)       relationships.role       = { data: { id: roleId,       type: 'roles'       } };\nif (userId)       relationships.user       = { data: { id: userId,       type: 'users'       } };\n\n/* ───── extract date values ─────────────────────────────────────────── */\nconst desireStartDate = pageData.property_desire_start_day_of_newcomer?.start ?? null;\n\n/* ───── payload ─────────────────────────────────────────────────────── */\nconst payload = {\n  data: {\n    type: 'requisitions',\n    ...(isUpdate ? { id: ttId } : {}),            // add id only on update\n    attributes: {\n      'job-title':          pageData.property_name ?? '',\n      'job-description':    pageData.property_job_description ?? '',\n      country:              isoCountry(pageData.property_country ?? ''),\n      'min-salary':         minSalary,\n      'max-salary':         maxSalary,\n      currency:             'USD',\n      'salary-time-unit':   (pageData.property_salary_period ?? '').toLowerCase(),\n      'number-of-openings': pageData.property_expected_number_of_hires ?? null,\n      'custom-form-answers': {\n        desire_start_day:       desireStartDate,\n        priority_of_position:   pageData.property_priority_of_position ?? null,\n        level_of_candidate:     pageData.property_level_of_candidate ?? null,\n        team:                   teamName,\n        reason:                 Array.isArray(pageData.property_reason) ? pageData.property_reason.join(', ') : (pageData.property_reason ?? ''),\n        will_there_be_a_test_task:\n                                 pageData.property_will_there_be_a_test_task ?? null,\n        please_define_hiring_stages:\n                                 pageData.property_please_define_hiring_stages ?? '',\n        key_competencies_for_position:\n                                 pageData.property_key_competencies_for_position ?? '',\n        additional_comments_for_recruiter_or_approval:\n                                 pageData.property_additional_comments_for_recruiter_or_approval ?? ''\n      },\n      status: 'pending'\n    },\n    relationships\n  }\n};\n\n/* ───── output ──────────────────────────────────────────────────────── */\nreturn {\n  payload,\n  isUpdate,\n  ttId,\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        928
+      ],
+      "id": "b8ea74d0-5324-4b93-b54a-856a3182c862",
+      "name": "Assemble Body Universal"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Strip the ID so Teamtailor accepts a POST.\nconst p = $('Assemble Body Universal').first().json.payload;          // shallow copy\n\nif (p?.data?.id) delete p.data.id;\n\nreturn { payload: p };                   // nothing else needed"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        832
+      ],
+      "id": "bfcb9981-bc3c-4f6d-b93d-7197532f06c7",
+      "name": "Reset for Creating"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "get",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Get Database Page by Id').item.json.property_role[0] }}",
+          "mode": "id"
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -208,
+        928
+      ],
+      "id": "b255e2e9-e96c-4674-9e08-97cf726e251f",
+      "name": "Find Role page",
+      "credentials": {
+        "notionApi": {
+          "id": "dvG81BygcxjHVM4C",
+          "name": "Manager's Home"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "get",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Get Database Page by Id').item.json.property_team[0] }}",
+          "mode": "id"
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        928
+      ],
+      "id": "e998a41f-da94-46ed-a951-33fd4581b818",
+      "name": "Find Team page",
+      "credentials": {
+        "notionApi": {
+          "id": "dvG81BygcxjHVM4C",
+          "name": "Manager's Home"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "get",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $('Get Database Page by Id').item.json.property_department[0] }}",
+          "mode": "id"
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        928
+      ],
+      "id": "1903a4f5-154f-429d-a1fe-637205088918",
+      "name": "Find Department page",
+      "credentials": {
+        "notionApi": {
+          "id": "WFQ5qkbH2adfLXpC",
+          "name": "Integration QA Zapier (Notion)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0959J8MV4K",
+          "mode": "list",
+          "cachedResultName": "automation-errors-notification"
+        },
+        "text": "={{ $json.text }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        3248,
+        704
+      ],
+      "id": "361055a4-66dd-43ec-8871-83360a5546fd",
+      "name": "Slack",
+      "webhookId": "eb978c2c-bf74-4ff4-b810-46f4627d318b",
+      "credentials": {
+        "slackApi": {
+          "id": "h4hYe6hY0YHsd0no",
+          "name": "Vira Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0959J8MV4K",
+          "mode": "list",
+          "cachedResultName": "automation-errors-notification"
+        },
+        "text": "=🚨 *Notion - Opening a New Position*\n\n*Error Details:*\n• *Message:* {{ $json.error.message }}\n• *Status Code:* {{ $json.error.statusCode }}\n• *Timestamp:* {{ $json.error.timestamp }}\n{{ $json.error.details ? '• *Details:* ' + $json.error.details : '' }}\n\n*Workflow:* BambooHR Employee Creation\n*Execution ID:* {{ $execution.id }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        2288,
+        1392
+      ],
+      "id": "1ac71f67-258f-4fb0-aaad-96d5391fdc0b",
+      "name": "Send Notification to Slack Channel",
+      "webhookId": "eb978c2c-bf74-4ff4-b810-46f4627d318b",
+      "credentials": {
+        "slackApi": {
+          "id": "h4hYe6hY0YHsd0no",
+          "name": "Vira Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "user",
+        "user": {
+          "__rl": true,
+          "value": "U070YR4AXK3",
+          "mode": "list",
+          "cachedResultName": "kateryna.gogova"
+        },
+        "text": "=Нова заявка вже створена в системі TeamTailor ✅  \nТепер важливо передати її на апрув.\n\nОберіть відповідний approval flow до позиції та створіть запит на затвердження, щоб мати можливість надалі працювати з вакансією.\n\n🔗 [Перейти до вибору approval-flow](https://app.teamtailor.com/companies/6m5KynaH2o4/jobs/requisition/{{ $json.property_tt_requisition_id }}/approval-flow)",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        2624,
+        -80
+      ],
+      "id": "e95fa183-edb3-4be8-bb05-3516a9b5c1f2",
+      "name": "Send Personal Message to Pick the Approval Flow",
+      "webhookId": "1878348d-3c16-4fcd-a63a-cff36624bc23",
+      "credentials": {
+        "slackApi": {
+          "id": "h4hYe6hY0YHsd0no",
+          "name": "Vira Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const error = $input.all()[0].json;\n\n// Try to determine which node failed\nlet errorSource = 'Unknown';\ntry {\n  // Get the previous node's name from execution context\n  const prevNodeName = $prevNode?.name || 'Unknown';\n  errorSource = prevNodeName;\n} catch (e) {\n  // Fallback if context is not available\n  errorSource = 'Workflow';\n}\n\nconst statusCode = error.statusCode || error.code || 500;\n\n// Build a comprehensive error response\nconst errorResponse = {\n  success: false,\n  error: {\n    message: error.message || error.description || \"An error occurred during workflow execution\",\n    statusCode: statusCode,\n    source: errorSource,\n    timestamp: new Date().toISOString()\n  }\n};\n\n// Add additional error details if available\nif (error.cause) {\n  errorResponse.error.cause = error.cause;\n}\n\nif (error.description) {\n  errorResponse.error.details = error.description;\n}\n\n// Add context about what was being attempted\nif (error.config && error.config.url) {\n  errorResponse.error.failedEndpoint = error.config.url;\n}\n\n// Log the error for debugging\nconsole.error('Workflow Error:', errorResponse);\n\nreturn [{\n  json: errorResponse\n}];"
+      },
+      "id": "18e440d2-83d3-4aac-9ef8-c55b1a1f7db2",
+      "name": "Process Error Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const error = $input.all()[0].json;\n\n// Try to determine which node failed\nlet errorSource = 'Unknown';\ntry {\n  // Get the previous node's name from execution context\n  const prevNodeName = $prevNode?.name || 'Unknown';\n  errorSource = prevNodeName;\n} catch (e) {\n  // Fallback if context is not available\n  errorSource = 'Workflow';\n}\n\nconst statusCode = error.statusCode || error.code || 500;\n\n// Build a comprehensive error response\nconst errorResponse = {\n  success: false,\n  error: {\n    message: error.message || error.description || \"An error occurred during workflow execution\",\n    statusCode: statusCode,\n    source: errorSource,\n    timestamp: new Date().toISOString()\n  }\n};\n\n// Add additional error details if available\nif (error.cause) {\n  errorResponse.error.cause = error.cause;\n}\n\nif (error.description) {\n  errorResponse.error.details = error.description;\n}\n\n// Add context about what was being attempted\nif (error.config && error.config.url) {\n  errorResponse.error.failedEndpoint = error.config.url;\n}\n\n// Log the error for debugging\nconsole.error('Workflow Error:', errorResponse);\n\nreturn [{\n  json: errorResponse\n}];"
+      },
+      "id": "11c4e1bb-8608-4d47-9a0e-71bee68ae273",
+      "name": "Process Error Response1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2048,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "e527235d-7bf0-47b2-b5c1-3498bb22bf5e",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1792,
+        1120
+      ],
+      "id": "25cf675c-3b97-4f10-b417-c9f868491b06",
+      "name": "New Page Created",
+      "webhookId": "e527235d-7bf0-47b2-b5c1-3498bb22bf5e"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "c9f718f4-4334-4c21-a559-c5f03caa33f4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1792,
+        736
+      ],
+      "id": "db0b572c-28de-462a-9fb9-71058b796685",
+      "name": "Create requisition button",
+      "webhookId": "c9f718f4-4334-4c21-a559-c5f03caa33f4"
+    }
+  ],
+  "connections": {
+    "convert to json object4": {
+      "main": [
+        [
+          {
+            "node": "Find Role page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request Users": {
+      "main": [
+        [
+          {
+            "node": "convert to json object4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create new requisition2": {
+      "main": [
+        [
+          {
+            "node": "Update Requisition Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Process Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Requisition Page": {
+      "main": [
+        [
+          {
+            "node": "Prettify JSON object to MD text",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Personal Message to Pick the Approval Flow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Requisition In Case Of An Error": {
+      "main": [
+        [
+          {
+            "node": "Prettify JSON object to MD text1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prettify JSON object to MD text": {
+      "main": [
+        [
+          {
+            "node": "Send Message to recruit-team",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Personal Message to Job Owner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Prettify JSON object to MD text",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Prettify JSON object to MD text1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prettify JSON object to MD text1": {
+      "main": [
+        [
+          {
+            "node": "Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack Lookup by Email": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request Users",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update new requisition": {
+      "main": [
+        [
+          {
+            "node": "Update Requisition Page1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Process Error Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Requisition In Case Of An Error1": {
+      "main": [
+        []
+      ]
+    },
+    "Update Requisition Page1": {
+      "main": [
+        [
+          {
+            "node": "Send Personal Message to Job Owner1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Database Page by Id": {
+      "main": [
+        [
+          {
+            "node": "Slack Lookup by Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create or Update": {
+      "main": [
+        [
+          {
+            "node": "Create new requisition2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get The Requisition in TT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get The Requisition in TT": {
+      "main": [
+        [
+          {
+            "node": "Check wether requisition archived or not",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check wether requisition archived or not": {
+      "main": [
+        [
+          {
+            "node": "Reset for Creating",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update new requisition",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble Body Universal": {
+      "main": [
+        [
+          {
+            "node": "Create or Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reset for Creating": {
+      "main": [
+        [
+          {
+            "node": "Create new requisition2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Role page": {
+      "main": [
+        [
+          {
+            "node": "Find Team page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Team page": {
+      "main": [
+        [
+          {
+            "node": "Find Department page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Department page": {
+      "main": [
+        [
+          {
+            "node": "Assemble Body Universal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Error Response": {
+      "main": [
+        [
+          {
+            "node": "Update Requisition In Case Of An Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Error Response1": {
+      "main": [
+        [
+          {
+            "node": "Update Requisition In Case Of An Error1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Notification to Slack Channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Page Created": {
+      "main": [
+        [
+          {
+            "node": "Get Database Page by Id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create requisition button": {
+      "main": [
+        [
+          {
+            "node": "Get Database Page by Id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "New Page Created": [
+      {
+        "headers": {
+          "host": "viragamesinc.app.n8n.cloud",
+          "user-agent": "NotionAutomation",
+          "content-length": "7750",
+          "accept-encoding": "gzip, br",
+          "baggage": "sentry-environment=production,sentry-release=0.0.4092,sentry-public_key=529a6d1990e5471d874257842c4f4ad8,sentry-trace_id=dcf20097fb5b4fc3833d5d009838ad8c",
+          "cdn-loop": "cloudflare; loops=1; subreqs=1",
+          "cf-connecting-ip": "44.241.75.17",
+          "cf-ew-via": "15",
+          "cf-ipcountry": "US",
+          "cf-ray": "96aeac55736ba32d-PDX",
+          "cf-visitor": "{\"scheme\":\"https\"}",
+          "cf-worker": "n8n.cloud",
+          "content-type": "application/json",
+          "sentry-trace": "dcf20097fb5b4fc3833d5d009838ad8c-baa626262dc8dd03",
+          "traceparent": "00-582257010ff63ea5d3428709fbc6624e-d5b4c1c738788501-00",
+          "x-forwarded-for": "44.241.75.17, 172.68.174.84",
+          "x-forwarded-host": "viragamesinc.app.n8n.cloud",
+          "x-forwarded-port": "443",
+          "x-forwarded-proto": "https",
+          "x-forwarded-server": "traefik-prod-users-gwc-33-6b64989c5-s7rlk",
+          "x-is-trusted": "yes",
+          "x-real-ip": "44.241.75.17"
+        },
+        "params": {},
+        "query": {},
+        "body": {
+          "source": {
+            "type": "automation",
+            "automation_id": "2469748b-c8c2-8008-9e4f-004de74b2158",
+            "action_id": "2479748b-c8c2-8013-b1a9-005a0ee5853b",
+            "event_id": "4da4a557-7594-4c08-aa1a-fac658732f5f",
+            "attempt": 1
+          },
+          "data": {
+            "object": "page",
+            "id": "2479748b-c8c2-8174-94e6-dd45a04b20b1",
+            "created_time": "2025-08-06T12:52:00.000Z",
+            "last_edited_time": "2025-08-06T12:52:00.000Z",
+            "created_by": {
+              "object": "user",
+              "id": "209d872b-594c-81cf-b74d-000218d99309"
+            },
+            "last_edited_by": {
+              "object": "user",
+              "id": "00000000-0000-0000-0000-000000000003"
+            },
+            "cover": null,
+            "icon": null,
+            "parent": {
+              "type": "database_id",
+              "database_id": "21c9748b-c8c2-802e-8cf1-caa3257b046a"
+            },
+            "archived": false,
+            "in_trash": false,
+            "properties": {
+              "Checking form info": {
+                "id": "%3CP~%5B",
+                "type": "formula",
+                "formula": {
+                  "type": "string",
+                  "string": "⚠️ Role Status must be 'Verified'"
+                }
+              },
+              "Role*": {
+                "id": "%3C%7CeD",
+                "type": "relation",
+                "relation": [
+                  {
+                    "id": "23e9748b-c8c2-80cc-9704-ef3e0d2dcbe4"
+                  }
+                ],
+                "has_more": false
+              },
+              "Person": {
+                "id": "%3ETpG",
+                "type": "people",
+                "people": [
+                  {
+                    "object": "user",
+                    "id": "209d872b-594c-81cf-b74d-000218d99309",
+                    "name": "Kirill Dubovyk",
+                    "avatar_url": "https://lh3.googleusercontent.com/a/ACg8ocLrCgJBF3iexqqRAaPurUQ32828u0mtwF216L5gq-ePN5qtPA=s100",
+                    "type": "person",
+                    "person": {
+                      "email": "kirill.dubovyk@vira.games"
+                    }
+                  }
+                ]
+              },
+              "Country*": {
+                "id": "%40dZp",
+                "type": "select",
+                "select": {
+                  "id": "6271d1a8-7562-4d97-a9fb-20a0e33d2ef6",
+                  "name": "Ukraine",
+                  "color": "blue"
+                }
+              },
+              "Role status": {
+                "id": "Aork",
+                "type": "rollup",
+                "rollup": {
+                  "type": "array",
+                  "array": [
+                    {
+                      "type": "status",
+                      "status": {
+                        "id": "nqEO",
+                        "name": "Needs verification",
+                        "color": "blue"
+                      }
+                    }
+                  ],
+                  "function": "show_original"
+                }
+              },
+              "Job Description": {
+                "id": "Eem%3D",
+                "type": "rich_text",
+                "rich_text": [
+                  {
+                    "type": "text",
+                    "text": {
+                      "content": "Тут мають бути додані для усіх позицій стандартні поля: 1. Обовʼязки 2. Навички та досвід.                                                                                              ОБОВʼЯЗКОВО Для позицій Leadership(L1-L3) також необхідно додати місію ролі, цілі.",
+                      "link": null
+                    },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "Тут мають бути додані для усіх позицій стандартні поля: 1. Обовʼязки 2. Навички та досвід.                                                                                              ОБОВʼЯЗКОВО Для позицій Leadership(L1-L3) також необхідно додати місію ролі, цілі.",
+                    "href": null
+                  }
+                ]
+              },
+              "Additional Comments for Recruiter or Approval": {
+                "id": "Ff%3BM",
+                "type": "rich_text",
+                "rich_text": [
+                  {
+                    "type": "text",
+                    "text": {
+                      "content": "Additional Comment",
+                      "link": null
+                    },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "Additional Comment",
+                    "href": null
+                  }
+                ]
+              },
+              "Team*": {
+                "id": "G_o%5D",
+                "type": "relation",
+                "relation": [
+                  {
+                    "id": "23e9748b-c8c2-8090-b761-de1a92a01ac4"
+                  }
+                ],
+                "has_more": false
+              },
+              "Role Outcomes": {
+                "id": "H%3ACa",
+                "type": "rich_text",
+                "rich_text": []
+              },
+              "Desire start Day of newcomer*": {
+                "id": "J%3C%60s",
+                "type": "date",
+                "date": {
+                  "start": "2025-08-29",
+                  "end": null,
+                  "time_zone": null
+                }
+              },
+              "Role Competences": {
+                "id": "JZO%3A",
+                "type": "rich_text",
+                "rich_text": []
+              },
+              "Min Salary": {
+                "id": "Qgea",
+                "type": "number",
+                "number": 1500
+              },
+              "Salary Period*": {
+                "id": "SbuN",
+                "type": "select",
+                "select": {
+                  "id": "6c69eb15-b825-45f7-94a2-ff84d9531831",
+                  "name": "Monthly",
+                  "color": "purple"
+                }
+              },
+              "Max Salary": {
+                "id": "SuVS",
+                "type": "number",
+                "number": 3000
+              },
+              "Department*": {
+                "id": "WpZP",
+                "type": "relation",
+                "relation": [
+                  {
+                    "id": "1a09748b-c8c2-8091-9447-f1d4d95679e1"
+                  }
+                ],
+                "has_more": false
+              },
+              "Fixed Salary": {
+                "id": "XzZN",
+                "type": "number",
+                "number": null
+              },
+              "Location*": {
+                "id": "YW%3Ex",
+                "type": "select",
+                "select": {
+                  "id": "455809e5-e6bf-4313-85f9-3c7f0af59f8b",
+                  "name": "Europe (Remote)",
+                  "color": "yellow"
+                }
+              },
+              "last_synced_at": {
+                "id": "%5D%3AYs",
+                "type": "date",
+                "date": null
+              },
+              "Will there be a test task?": {
+                "id": "%5Eudy",
+                "type": "select",
+                "select": {
+                  "id": "e9c73020-329a-4dbe-b284-fb3070e64b0e",
+                  "name": "No",
+                  "color": "blue"
+                }
+              },
+              "Expected number of hires*": {
+                "id": "%60CwR",
+                "type": "number",
+                "number": 1
+              },
+              "Department status": {
+                "id": "attf",
+                "type": "rollup",
+                "rollup": {
+                  "type": "array",
+                  "array": [
+                    {
+                      "type": "status",
+                      "status": {
+                        "id": "s}Wb",
+                        "name": "Verified",
+                        "color": "green"
+                      }
+                    }
+                  ],
+                  "function": "show_original"
+                }
+              },
+              "Hiring process end date": {
+                "id": "ei%3Dg",
+                "type": "date",
+                "date": {
+                  "start": "2025-10-05",
+                  "end": null,
+                  "time_zone": null
+                }
+              },
+              "Role Mission": {
+                "id": "hqa%5E",
+                "type": "rich_text",
+                "rich_text": []
+              },
+              "sync_error": {
+                "id": "jdnc",
+                "type": "rich_text",
+                "rich_text": []
+              },
+              "Info hiring stages": {
+                "id": "kVA%3C",
+                "type": "formula",
+                "formula": {
+                  "type": "string",
+                  "string": "Standard hiring stages:\n1. CV Screening Recruiter\n2. Manager CV Screen\n3. Recruiting Interview\n4. Task (if needed)\n5. Manager's Interview\n6. Offer"
+                }
+              },
+              "Level of Candidate*": {
+                "id": "niOG",
+                "type": "select",
+                "select": {
+                  "id": "28e6e4b2-2ff7-4df9-8065-e8d1101f20fe",
+                  "name": "Middle",
+                  "color": "default"
+                }
+              },
+              "tt_requisition_id": {
+                "id": "o%3DUp",
+                "type": "rich_text",
+                "rich_text": []
+              },
+              "Reason*": {
+                "id": "qPJw",
+                "type": "multi_select",
+                "multi_select": [
+                  {
+                    "id": "61307672-e967-43d4-a0d6-f68301c261d7",
+                    "name": "Team Growth",
+                    "color": "default"
+                  }
+                ]
+              },
+              "Checking info": {
+                "id": "spWw",
+                "type": "formula",
+                "formula": {
+                  "type": "string",
+                  "string": "⚠️ Role Status must be 'Verified'"
+                }
+              },
+              "Created by": {
+                "id": "tPaj",
+                "type": "created_by",
+                "created_by": {
+                  "object": "user",
+                  "id": "209d872b-594c-81cf-b74d-000218d99309",
+                  "name": "Kirill Dubovyk",
+                  "avatar_url": "https://lh3.googleusercontent.com/a/ACg8ocLrCgJBF3iexqqRAaPurUQ32828u0mtwF216L5gq-ePN5qtPA=s100",
+                  "type": "person",
+                  "person": {
+                    "email": "kirill.dubovyk@vira.games"
+                  }
+                }
+              },
+              "Status": {
+                "id": "th%3D%3A",
+                "type": "status",
+                "status": {
+                  "id": "9cdc92ed-1ee9-49da-a1ca-b6522c966cd9",
+                  "name": "New",
+                  "color": "default"
+                }
+              },
+              "Hiring process start date*": {
+                "id": "uYse",
+                "type": "date",
+                "date": {
+                  "start": "2025-08-06",
+                  "end": null,
+                  "time_zone": null
+                }
+              },
+              "Key Competencies for position": {
+                "id": "wGNM",
+                "type": "rich_text",
+                "rich_text": []
+              },
+              "Please define hiring stages": {
+                "id": "wq%5DQ",
+                "type": "rich_text",
+                "rich_text": [
+                  {
+                    "type": "text",
+                    "text": {
+                      "content": "Пропишіть які етапи мають бути для найму.                                    Стандарний процес найму  усіх позицій - Standart: 1. CV Screening Recruiter 2. Manager CV Screen 2. Recruiting Interview 3. Task Task(if needed) 4. Managers Interview 5. Offer.                                                 Leadership Hiring (L1-L3) - 1. Screening2. WHO3. Focused4. Reference",
+                      "link": null
+                    },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "Пропишіть які етапи мають бути для найму.                                    Стандарний процес найму  усіх позицій - Standart: 1. CV Screening Recruiter 2. Manager CV Screen 2. Recruiting Interview 3. Task Task(if needed) 4. Managers Interview 5. Offer.                                                 Leadership Hiring (L1-L3) - 1. Screening2. WHO3. Focused4. Reference",
+                    "href": null
+                  }
+                ]
+              },
+              "Priority of position": {
+                "id": "yw%5C%3B",
+                "type": "select",
+                "select": {
+                  "id": "be39a035-c621-432e-ae24-d8c94a3c9055",
+                  "name": "2 (High Priority)",
+                  "color": "orange"
+                }
+              },
+              "Need salary range?": {
+                "id": "%7DPqO",
+                "type": "checkbox",
+                "checkbox": true
+              },
+              "Name": {
+                "id": "title",
+                "type": "title",
+                "title": [
+                  {
+                    "type": "text",
+                    "text": {
+                      "content": "Test Automation Role",
+                      "link": null
+                    },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "Test Automation Role",
+                    "href": null
+                  }
+                ]
+              }
+            },
+            "url": "https://www.notion.so/Test-Automation-Role-2479748bc8c2817494e6dd45a04b20b1",
+            "public_url": null,
+            "request_id": "5b5b254a-bd28-48c7-a842-714fa83b0975"
+          }
+        },
+        "webhookUrl": "https://viragamesinc.app.n8n.cloud/webhook/e527235d-7bf0-47b2-b5c1-3498bb22bf5e",
+        "executionMode": "production"
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "db8c34fa8115e7968d24f8e10f4a110dda7aba2143d2fb70a8ce47f420de93d6"
+  }
+}

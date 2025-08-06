@@ -1,0 +1,36 @@
+# GitHub Pages Configuration
+title: HR Integration System
+description: Автоматизація HR-процесів через інтеграцію TeamTailor, BambooHR, Notion та Slack
+theme: null
+baseurl: ""
+url: ""
+
+# Build settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Exclude files
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - LICENSE
+
+# Include files
+include:
+  - _pages
+
+# Plugins
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# SEO
+author: Кирило Дубовик
+lang: uk
+
+# Social
+github_username: yourusername
+company: Vira Games

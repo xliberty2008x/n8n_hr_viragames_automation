@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.teamtailor.com)",
+      "WebFetch(domain:developers.teamtailor.com)",
+      "WebFetch(domain:www.teamtailor.com)",
+      "WebFetch(domain:github.com)"
+    ],
+    "deny": []
+  }
+}

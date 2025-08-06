@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Integration System - TeamTailor → BambooHR</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-sync-alt"></i>
+                <span>HR Integration System</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link active">Головна</a></li>
+                <li><a href="#features" class="nav-link">Можливості</a></li>
+                <li><a href="#architecture" class="nav-link">Архітектура</a></li>
+                <li><a href="#scenarios" class="nav-link">Сценарії</a></li>
+                <li><a href="setup.html" class="nav-link">Встановлення</a></li>
+                <li><a href="docs.html" class="nav-link">Документація</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-status">Production Ready</span>
+                <span class="badge-version">v1.0</span>
+            </div>
+            <h1 class="hero-title">
+                Автоматизація HR-процесів
+                <span class="gradient-text">нового покоління</span>
+            </h1>
+            <p class="hero-description">
+                Інтеграція TeamTailor, BambooHR, Notion та Slack через n8n платформу.
+                Економія 85% часу HR-менеджера на рутинних операціях.
+            </p>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="stat-number">85%</div>
+                    <div class="stat-label">Економія часу</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Інтегровані системи</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3 хв</div>
+                    <div class="stat-label">Час обробки</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">80%</div>
+                    <div class="stat-label">Менше помилок</div>
+                </div>
+            </div>
+            <div class="hero-actions">
+                <a href="#features" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i> Почати знайомство
+                </a>
+                <a href="setup.html" class="btn btn-secondary">
+                    <i class="fas fa-book"></i> Інструкція
+                </a>
+            </div>
+        </div>
+        <div class="hero-animation">
+            <div class="integration-flow">
+                <div class="app-icon teamtailor">
+                    <img src="assets/img/teamtailor-icon.svg" alt="TeamTailor">
+                    <span>TeamTailor</span>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="app-icon n8n">
+                    <img src="assets/img/n8n-icon.svg" alt="n8n">
+                    <span>n8n</span>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="app-icon bamboohr">
+                    <img src="assets/img/bamboohr-icon.svg" alt="BambooHR">
+                    <span>BambooHR</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Основні можливості</h2>
+                <p>Автоматизація, яка змінює правила гри</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <h3>Повна синхронізація</h3>
+                    <p>Автоматична синхронізація даних між всіма системами в реальному часі</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> TeamTailor ↔ BambooHR</li>
+                        <li><i class="fas fa-check"></i> TeamTailor ↔ Notion</li>
+                        <li><i class="fas fa-check"></i> BambooHR → Slack</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Економія часу</h3>
+                    <p>Скорочення часу на рутинні операції з 45-60 хвилин до 5-7 хвилин</p>
+                    <div class="time-comparison">
+                        <div class="time-before">
+                            <span class="time-label">Раніше</span>
+                            <span class="time-value">45-60 хв</span>
+                        </div>
+                        <div class="time-arrow">→</div>
+                        <div class="time-after">
+                            <span class="time-label">Зараз</span>
+                            <span class="time-value">5-7 хв</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Зменшення помилок</h3>
+                    <p>Усунення ручного введення даних та людського фактору</p>
+                    <div class="error-reduction">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 80%"></div>
+                        </div>
+                        <span class="reduction-text">80% менше помилок</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Єдине джерело правди</h3>
+                    <p>Кінець дублюванню даних - інформація вводиться один раз</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Централізований контроль</li>
+                        <li><i class="fas fa-check"></i> Консистентність даних</li>
+                        <li><i class="fas fa-check"></i> Автоматичні оновлення</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="architecture">
+        <div class="container">
+            <div class="section-header">
+                <h2>Архітектура системи</h2>
+                <p>Як все працює під капотом</p>
+            </div>
+            <div class="architecture-diagram">
+                <div class="arch-layer sources">
+                    <h3>Джерела даних</h3>
+                    <div class="arch-apps">
+                        <div class="arch-app">
+                            <i class="fas fa-users"></i>
+                            <span>TeamTailor</span>
+                            <small>ATS System</small>
+                        </div>
+                        <div class="arch-app">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Notion</span>
+                            <small>HR Database</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="arch-flow-down">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="arch-layer platform">
+                    <h3>Платформа автоматизації</h3>
+                    <div class="arch-apps">
+                        <div class="arch-app main">
+                            <i class="fas fa-cogs"></i>
+                            <span>n8n Workflows</span>
+                            <small>3 основні сценарії</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="arch-flow-down">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="arch-layer targets">
+                    <h3>Цільові системи</h3>
+                    <div class="arch-apps">
+                        <div class="arch-app">
+                            <i class="fas fa-id-card"></i>
+                            <span>BambooHR</span>
+                            <small>HRIS</small>
+                        </div>
+                        <div class="arch-app">
+                            <i class="fab fa-slack"></i>
+                            <span>Slack</span>
+                            <small>Notifications</small>
+                        </div>
+                        <div class="arch-app">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Notion</span>
+                            <small>Updates</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scenarios Section -->
+    <section id="scenarios" class="scenarios">
+        <div class="container">
+            <div class="section-header">
+                <h2>Сценарії інтеграції</h2>
+                <p>Три основні автоматизовані процеси</p>
+            </div>
+            <div class="scenarios-grid">
+                <div class="scenario-card">
+                    <div class="scenario-number">01</div>
+                    <h3>Синхронізація департаментів</h3>
+                    <p>Автоматична синхронізація організаційної структури між Notion та TeamTailor</p>
+                    <div class="scenario-details">
+                        <div class="detail-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Запуск: Щотижня</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Час: 1-2 хв</span>
+                        </div>
+                    </div>
+                    <a href="docs.html#scenario1" class="scenario-link">Детальніше →</a>
+                </div>
+                <div class="scenario-card">
+                    <div class="scenario-number">02</div>
+                    <h3>Відкриття вакансій</h3>
+                    <p>Створення requisition в TeamTailor з даних Notion</p>
+                    <div class="scenario-details">
+                        <div class="detail-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Запуск: При створенні</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Час: 30 сек</span>
+                        </div>
+                    </div>
+                    <a href="docs.html#scenario2" class="scenario-link">Детальніше →</a>
+                </div>
+                <div class="scenario-card">
+                    <div class="scenario-number">03</div>
+                    <h3>Найм співробітників</h3>
+                    <p>Автоматичне створення профілю в BambooHR при наймі</p>
+                    <div class="scenario-details">
+                        <div class="detail-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Запуск: Webhook</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Час: 2-3 хв</span>
+                        </div>
+                    </div>
+                    <a href="docs.html#scenario3" class="scenario-link">Детальніше →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Готові почати?</h2>
+                <p>Система повністю налаштована та готова до роботи</p>
+                <div class="cta-actions">
+                    <a href="setup.html" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Інструкція запуску
+                    </a>
+                    <a href="docs.html" class="btn btn-secondary">
+                        <i class="fas fa-book"></i> Повна документація
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h4>HR Integration System</h4>
+                    <p>Розроблено для Vira Games</p>
+                    <p>Автор: Дубовик Кирило</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Швидкі посилання</h4>
+                    <ul>
+                        <li><a href="setup.html">Встановлення</a></li>
+                        <li><a href="docs.html">Документація</a></li>
+                        <li><a href="troubleshooting.html">Troubleshooting</a></li>
+                        <li><a href="https://github.com/yourusername/yourrepo">GitHub</a></li>
+                    </ul>
+                </div>
+                <div class="footer-tech">
+                    <h4>Технології</h4>
+                    <div class="tech-icons">
+                        <span class="tech-badge">n8n</span>
+                        <span class="tech-badge">TeamTailor</span>
+                        <span class="tech-badge">BambooHR</span>
+                        <span class="tech-badge">Notion</span>
+                        <span class="tech-badge">Slack</span>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 Vira Games. Всі права захищені.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
