@@ -70,7 +70,7 @@
                 <h3>Технічні деталі</h3>
                 <ul>
                     <li><a href="#n8n-workflows" class="sidebar-link">n8n Workflows</a></li>
-                    <li><a href="#error-handling" class="sidebar-link">Обробка помилок</a></li>
+                    <li><a href="#error-handling" class="sidebar-link">AI Error Handler</a></li>
                     <li><a href="#best-practices" class="sidebar-link">Best Practices</a></li>
                 </ul>
             </div>
@@ -645,6 +645,12 @@ fetch(url, {
                                 <td>Webhook</td>
                                 <td>2-3 хв</td>
                             </tr>
+                            <tr style="background: #fef3c7;">
+                                <td><strong>Error Handler</strong></td>
+                                <td>4 nodes (AI Agent)</td>
+                                <td>Error Trigger</td>
+                                <td>5-10 сек</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -660,24 +666,77 @@ fetch(url, {
 
             <!-- Error Handling Section -->
             <section id="error-handling" class="docs-section">
-                <h2>⚠️ Обробка помилок</h2>
+                <h2>⚠️ Обробка помилок та AI Error Handler</h2>
                 
-                <h3>Стратегія обробки</h3>
+                <div class="alert alert-info">
+                    <i class="fas fa-robot"></i>
+                    <div>
+                        <strong>AI-Powered Error Processing</strong>
+                        <p>Система використовує GPT-4.1 для інтелектуального аналізу помилок та формування читабельних повідомлень.</p>
+                    </div>
+                </div>
+
+                <h3>🤖 Error Handler Workflow (AI Automation Department)</h3>
+                
+                <div class="config-block">
+                    <h4>Архітектура Error Handler:</h4>
+                    <ol>
+                        <li><strong>Error Trigger</strong> - Автоматично спрацьовує при помилці в будь-якому workflow</li>
+                        <li><strong>AI Agent (GPT-4.1)</strong> - Аналізує помилку та генерує структуроване повідомлення</li>
+                        <li><strong>Slack Notification</strong> - Відправляє в канал #automation-errors-notification</li>
+                    </ol>
+                </div>
+
+                <h4>Як працює AI Error Handler:</h4>
+                <pre><code class="language-javascript">// Всі workflow автоматично підключені до Error Handler
+// При помилці в будь-якому сценарії:
+
+1. Error Trigger отримує payload з помилкою
+2. AI Agent аналізує:
+   - execution.id та URL
+   - workflow.name та lastNodeExecuted
+   - HTTP код помилки та URI
+   - Timestamp в Europe/Kyiv часовому поясі
+   
+3. AI генерує повідомлення:
+   - 🔴 [error] або ⚠️ [warning] залежно від severity
+   - Людське пояснення проблеми
+   - Можливі рішення (3-6 кроків)
+   - Snippet з деталями помилки
+
+4. Slack отримує форматоване повідомлення</code></pre>
+
+                <h4>Приклад повідомлення в Slack:</h4>
+                <div class="config-block" style="background: #f8f9fa; border-left: 4px solid #e74c3c;">
+                    <strong>⚠️ [warning] — Job Create/Update TeamTailor Webhook</strong><br>
+                    <strong>When:</strong> 2025-01-28 16:48:42 (Europe/Kyiv)<br>
+                    <strong>Execution:</strong> ID 3262 • <a href="#">Open execution</a><br>
+                    <strong>Node:</strong> HTTP Request to TeamTailor<br>
+                    <strong>HTTP:</strong> 404 GET https://api.teamtailor.com/v1/jobs//requisition<br>
+                    <strong>Message:</strong> The resource could not be found<br><br>
+                    <strong>Human explanation:</strong><br>
+                    • Missing job_id in URL (/jobs//requisition)<br>
+                    • The job might have been deleted<br><br>
+                    <strong>Possible solutions:</strong><br>
+                    • Verify job_id exists before API call<br>
+                    • Add validation node<br>
+                    • Check if job was recently deleted
+                </div>
+
+                <h3>Стратегія обробки (Retry Logic)</h3>
                 <pre><code class="language-javascript">// Retry логіка з exponential backoff
 async function retryWithBackoff(fn, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await fn();
     } catch (error) {
-      if (i === maxRetries - 1) throw error;
+      if (i === maxRetries - 1) {
+        // Відправляємо на Error Handler
+        throw error; // → Error Trigger → AI Agent → Slack
+      }
       
       const delay = Math.pow(2, i) * 1000; // 1s, 2s, 4s
       await sleep(delay);
-      
-      // Логування в Slack
-      await notifySlack({
-        text: `Retry ${i + 1}/${maxRetries}: ${error.message}`
-      });
     }
   }
 }</code></pre>
@@ -763,10 +822,13 @@ async function retryWithBackoff(fn, maxRetries = 3) {
 
                 <h3>Контакти для підтримки</h3>
                 <div class="config-block">
+                    <p><strong>Департамент:</strong> AI Automation Department</p>
                     <p><strong>n8n instance:</strong> viragamesinc.app.n8n.cloud</p>
                     <p><strong>Slack канал:</strong> #hr-automation-notifications</p>
+                    <p><strong>Error канал:</strong> #automation-errors-notification</p>
                     <p><strong>GitHub:</strong> <a href="https://github.com/xliberty2008x/n8n_hr_viragames_automation">Repository</a></p>
                     <p><strong>Автор:</strong> Дубовик Кирило</p>
+                    <p><strong>Компанія:</strong> Vira Games</p>
                 </div>
             </section>
         </main>

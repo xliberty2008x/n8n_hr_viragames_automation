@@ -380,11 +380,37 @@ while (nextUrl) {
             <section id="n8n-errors" class="docs-section">
                 <h2>⚙️ n8n помилки</h2>
                 
+                <div class="alert alert-info">
+                    <i class="fas fa-robot"></i>
+                    <div>
+                        <strong>AI Error Handler автоматично обробляє всі помилки</strong>
+                        <p>Всі помилки автоматично аналізуються GPT-4.1 та відправляються в Slack канал #automation-errors-notification</p>
+                    </div>
+                </div>
+                
+                <h3>Як працює Error Handler</h3>
+                <div class="config-block">
+                    <h4>Автоматичний процес:</h4>
+                    <ol>
+                        <li>Будь-яка помилка в workflow → Error Trigger спрацьовує</li>
+                        <li>AI Agent (GPT-4.1) аналізує помилку</li>
+                        <li>Генерується структуроване повідомлення з:
+                            <ul>
+                                <li>Людським поясненням проблеми</li>
+                                <li>Конкретними кроками вирішення</li>
+                                <li>Посиланням на execution</li>
+                            </ul>
+                        </li>
+                        <li>Slack отримує повідомлення з emoji-індикатором severity</li>
+                    </ol>
+                    <p><strong>Розроблено:</strong> AI Automation Department</p>
+                </div>
+                
                 <h3>Workflow зависає</h3>
                 <ol>
                     <li>Перевірте execution timeout (Settings → Workflow)</li>
                     <li>Розбийте великі workflows на менші</li>
-                    <li>Використовуйте Error Workflow для обробки</li>
+                    <li>Error Handler автоматично повідомить про проблему</li>
                 </ol>
 
                 <h3>Memory exceeded</h3>
