@@ -393,8 +393,15 @@ GET /api/v1/users?filter[email]={manager_email}</code></pre>
                 <div class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle"></i>
                     <div>
-                        <strong>Важливо!</strong>
-                        <p>TeamTailor має баг з approval flow для API-створених requisitions. Потрібен workaround через n8n.</p>
+                        <strong>Важливо! Workaround для TeamTailor</strong>
+                        <p>API-створені requisitions не проходять через approval flow (TeamTailor каже це "expected behavior").</p>
+                        <p><strong>Як це вирішено:</strong></p>
+                        <ul>
+                            <li>✅ n8n створює requisition через API</li>
+                            <li>📱 Автоматично відправляється Slack повідомлення рекрутеру</li>
+                            <li>👤 Рекрутер заходить в TeamTailor та вручну встановлює approval flow</li>
+                            <li>⏱️ Займає додаткові 2-3 хвилини</li>
+                        </ul>
                     </div>
                 </div>
             </section>
