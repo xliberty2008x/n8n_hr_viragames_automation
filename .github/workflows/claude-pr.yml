@@ -48,16 +48,21 @@ jobs:
           # Use YOUR GitHub App token
           github_token: ${{ steps.app-token.outputs.token }}
           
-          # AWS Bedrock configuration with Claude Opus 4.1
+          # AWS Bedrock configuration
           use_bedrock: "true"
           timeout_minutes: "60"
           mode: "tag"
           
-          # Claude Opus 4.1 environment settings
+          # Force Claude Opus 4.1 model - override any defaults
+          model: "us.anthropic.claude-opus-4-1-20250805-v1:0"
+          anthropic_model: "us.anthropic.claude-opus-4-1-20250805-v1:0"
+          
+          # Environment variables to ensure model selection
           claude_env: |
             AWS_REGION=us-east-1
             AWS_BEDROCK_MODEL_ID=us.anthropic.claude-opus-4-1-20250805-v1:0
             ANTHROPIC_MODEL=us.anthropic.claude-opus-4-1-20250805-v1:0
+            BEDROCK_MODEL_ID=us.anthropic.claude-opus-4-1-20250805-v1:0
           
           # Custom instructions for better performance
           custom_instructions: |
@@ -65,3 +70,4 @@ jobs:
             This project integrates TeamTailor, BambooHR, and Notion for HR automation.
             Be direct, practical, and focus on solving problems efficiently.
             When reviewing code, prioritize security, maintainability, and performance.
+            IMPORTANT: Use Claude Opus 4.1 model for all responses.
