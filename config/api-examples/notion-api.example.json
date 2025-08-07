@@ -1,0 +1,56 @@
+{
+  "api_configuration": {
+    "base_url": "https://api.notion.com/v1",
+    "version": "2022-06-28",
+    "authentication": {
+      "type": "Bearer Token",
+      "integration_token": "YOUR_INTEGRATION_TOKEN_HERE"
+    },
+    "headers": {
+      "Notion-Version": "2022-06-28",
+      "Content-Type": "application/json"
+    }
+  },
+  "databases": {
+    "departments": {
+      "database_id": "YOUR_DEPARTMENTS_DB_ID",
+      "properties": {
+        "name": "title",
+        "teamtailor_id": "rich_text",
+        "manager": "people",
+        "status": "select",
+        "created_date": "created_time"
+      }
+    },
+    "requisitions": {
+      "database_id": "YOUR_REQUISITIONS_DB_ID",
+      "properties": {
+        "title": "title",
+        "department": "relation",
+        "location": "select",
+        "employment_type": "select",
+        "salary_range": "number",
+        "description": "rich_text",
+        "requirements": "rich_text",
+        "status": "select"
+      }
+    },
+    "employees": {
+      "database_id": "YOUR_EMPLOYEES_DB_ID",
+      "properties": {
+        "name": "title",
+        "email": "email",
+        "department": "relation",
+        "position": "rich_text",
+        "start_date": "date",
+        "bamboohr_id": "number",
+        "teamtailor_id": "rich_text"
+      }
+    }
+  },
+  "sync_settings": {
+    "department_sync_interval": "weekly",
+    "employee_sync_interval": "daily",
+    "requisition_sync": "on_change"
+  }
+}

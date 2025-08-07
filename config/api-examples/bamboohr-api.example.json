@@ -1,0 +1,40 @@
+{
+  "api_configuration": {
+    "base_url": "https://api.bamboohr.com/api/gateway.php/{subdomain}/v1",
+    "subdomain": "YOUR_SUBDOMAIN",
+    "authentication": {
+      "type": "Basic Auth",
+      "api_key": "YOUR_API_KEY_HERE",
+      "password": "x"
+    },
+    "headers": {
+      "Accept": "application/json",
+      "Content-Type": "application/json"
+    }
+  },
+  "endpoints": {
+    "employees": "/employees",
+    "employee_details": "/employees/{id}",
+    "departments": "/meta/departments",
+    "custom_fields": "/meta/fields",
+    "time_off": "/time_off/requests",
+    "reports": "/reports/custom"
+  },
+  "field_mappings": {
+    "teamtailor_to_bamboo": {
+      "first_name": "firstName",
+      "last_name": "lastName",
+      "email": "workEmail",
+      "phone": "mobilePhone",
+      "start_date": "hireDate",
+      "department": "department",
+      "job_title": "jobTitle",
+      "location": "location"
+    }
+  },
+  "custom_fields": {
+    "teamtailor_id": "customTeamTailorId",
+    "requisition_id": "customRequisitionId",
+    "offer_id": "customOfferId"
+  }
+}
