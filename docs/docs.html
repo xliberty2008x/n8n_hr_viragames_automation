@@ -59,6 +59,7 @@
                     <li><a href="#scenario1" class="sidebar-link">Сценарій 1: Синхронізація</a></li>
                     <li><a href="#scenario2" class="sidebar-link">Сценарій 2: Вакансії</a></li>
                     <li><a href="#scenario3" class="sidebar-link">Сценарій 3: Найм</a></li>
+                    <li><a href="#scenario4" class="sidebar-link">Сценарій 4: Зміна зарплати</a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
@@ -475,6 +476,159 @@
                 </div>
             </section>
 
+            <!-- Scenario 4 Section - Pay Rate Changes -->
+            <section id="scenario4" class="docs-section">
+                <h2>💰 Сценарій 4: Повідомлення про зміну зарплати</h2>
+                
+                <div class="scenario-run">
+                    <div class="scenario-header">
+                        <h3>Мета сценарію</h3>
+                        <span class="run-type auto">Webhook тригер (В розробці)</span>
+                    </div>
+                    <div class="scenario-steps">
+                        <p>Автоматичне повідомлення в Slack при зміні заробітної плати співробітника в BambooHR.</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Статус: В процесі впровадження</strong>
+                        <p>Webhooks налаштовані в BambooHR, але наразі не відправляють події. Відкрито тікет в службі підтримки BambooHR для вирішення проблеми.</p>
+                    </div>
+                </div>
+
+                <h3>Опис функціоналу</h3>
+                <p>Система автоматично відстежує зміни заробітної плати співробітників та надсилає повідомлення в Slack канал <strong>hr-legal</strong> для інформування відповідальних осіб.</p>
+
+                <h3>Формат повідомлення</h3>
+                <div class="config-block" style="background: #f8f9fa; border-left: 4px solid #7c3aed;">
+                    <strong>📨 Slack повідомлення:</strong><br><br>
+                    <em>"Зміна заробітньої плати з [Актуальне число зміни зп] для [Прізвище Ім'я працівника системи] [Посилання на працівника]"</em><br><br>
+                    <strong>Приклад:</strong><br>
+                    "Зміна заробітньої плати з $5000 для Петренко Іван <a href="#">Переглянути профіль</a>"
+                </div>
+
+                <h3>Технічна реалізація</h3>
+                
+                <h4>1. Налаштування BambooHR Webhook</h4>
+                <div class="config-block">
+                    <p><strong>Webhook endpoint:</strong> https://viragamesinc.app.n8n.cloud/webhook/bamboohr-pay-rate</p>
+                    <p><strong>Події для відстеження:</strong></p>
+                    <ul>
+                        <li>employee.pay_rate.changed</li>
+                        <li>employee.compensation.updated</li>
+                    </ul>
+                    <p><strong>Статус:</strong> ⚠️ Налаштовано, але події не надходять</p>
+                </div>
+
+                <h4>2. Обробка в n8n</h4>
+                <div class="config-block">
+                    <p><strong>Workflow компоненти:</strong></p>
+                    <ul>
+                        <li><strong>Webhook Node:</strong> Приймає події від BambooHR</li>
+                        <li><strong>Data Transform:</strong> Форматує дані для повідомлення</li>
+                        <li><strong>BambooHR API:</strong> Отримує додаткові дані співробітника</li>
+                        <li><strong>Slack Node:</strong> Відправляє форматоване повідомлення</li>
+                    </ul>
+                </div>
+
+                <h4>3. Дані що передаються</h4>
+                <pre><code class="language-json">{
+  "event": "pay_rate_change",
+  "employee": {
+    "id": "123",
+    "name": "Іван Петренко",
+    "department": "Engineering",
+    "position": "Senior Developer"
+  },
+  "changes": {
+    "previous_rate": 4500,
+    "new_rate": 5000,
+    "effective_date": "2025-02-01",
+    "currency": "USD"
+  }
+}</code></pre>
+
+                <h3>Поточні проблеми та workarounds</h3>
+                
+                <div class="troubleshooting-preview">
+                    <div class="issue-card">
+                        <h4>Проблема: Webhooks не відправляються</h4>
+                        <p>BambooHR webhooks налаштовані коректно, але події не надходять на endpoint</p>
+                        <span style="color: var(--warning-color)">Тікет #12345 відкрито</span>
+                    </div>
+                    <div class="issue-card">
+                        <h4>Тимчасове рішення: Polling</h4>
+                        <p>Можна налаштувати періодичну перевірку змін через API</p>
+                        <span style="color: var(--info-color)">Альтернативний підхід</span>
+                    </div>
+                </div>
+
+                <h3>Альтернативна реалізація (Polling)</h3>
+                <div class="config-block">
+                    <p><strong>Якщо webhooks не запрацюють, можна використати:</strong></p>
+                    <ol>
+                        <li>Cron тригер кожні 30 хвилин</li>
+                        <li>API запит на отримання всіх змін за останній період</li>
+                        <li>Порівняння з попереднім станом (збереженим в n8n)</li>
+                        <li>Відправка повідомлень про знайдені зміни</li>
+                    </ol>
+                    <p>Цей підхід менш ефективний, але гарантовано працює</p>
+                </div>
+
+                <h3>План впровадження</h3>
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Налаштування webhook</h3>
+                            <p>✅ Виконано - webhook створено в BambooHR</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Створення n8n workflow</h3>
+                            <p>✅ Виконано - workflow готовий до роботи</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Вирішення проблеми з webhook</h3>
+                            <p>⏳ В процесі - чекаємо відповідь від підтримки</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Тестування</h3>
+                            <p>⏸️ Заплановано після вирішення проблеми</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h3>Запуск в production</h3>
+                            <p>⏸️ Заплановано</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Очікувані результати</h3>
+                <ul class="checklist">
+                    <li><i class="fas fa-check"></i> Миттєві повідомлення про зміни зарплати</li>
+                    <li><i class="fas fa-check"></i> Прозорість змін компенсації</li>
+                    <li><i class="fas fa-check"></i> Автоматичний аудит змін</li>
+                    <li><i class="fas fa-check"></i> Зменшення часу на комунікацію</li>
+                </ul>
+            </section>
+
             <!-- TeamTailor API Section -->
             <section id="teamtailor-api" class="docs-section">
                 <h2>🔌 TeamTailor API</h2>
@@ -624,6 +778,12 @@ fetch(url, {
                                 <td>15 nodes</td>
                                 <td>Webhook</td>
                                 <td>2-3 хв</td>
+                            </tr>
+                            <tr style="background: #fffbeb;">
+                                <td>Pay Rate Change <span style="color: #f59e0b;">(В розробці)</span></td>
+                                <td>6 nodes</td>
+                                <td>Webhook / Polling</td>
+                                <td>5-10 сек</td>
                             </tr>
                             <tr style="background: #fef3c7;">
                                 <td><strong>Error Handler</strong></td>
