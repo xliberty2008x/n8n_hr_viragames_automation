@@ -130,9 +130,9 @@
 }
 
 .alert-info {
-    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-    color: #1e40af;
-    border: 1px solid #60a5fa;
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    color: #065f46;
+    border: 1px solid #6ee7b7;
 }
 
 /* Requirement Cards */
@@ -389,8 +389,8 @@ pre code {
 }
 
 .run-type.manual {
-    background: #dbeafe;
-    color: #1e40af;
+    background: #d1fae5;
+    color: #065f46;
 }
 
 .run-type.auto {
