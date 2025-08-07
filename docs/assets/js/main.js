@@ -34,33 +34,52 @@ function highlightNavigation() {
 
 window.addEventListener('scroll', highlightNavigation);
 
-// Smooth Scroll for Navigation Links
+// Enhanced Smooth Scroll for Navigation Links
 navLinks.forEach(link => {
-    if (link.getAttribute('href').startsWith('#')) {
+    const href = link.getAttribute('href');
+    if (href && href.includes('#')) {
         link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const targetId = link.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            
-            if (targetSection) {
-                const targetPosition = targetSection.offsetTop - 80;
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
+            // Check if it's an internal link
+            if (href.startsWith('#')) {
+                e.preventDefault();
+                const targetId = href;
+                const targetSection = document.querySelector(targetId);
                 
-                // Close mobile menu
-                navMenu.classList.remove('active');
-                hamburger.classList.remove('active');
+                if (targetSection) {
+                    const targetPosition = targetSection.offsetTop - 80;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Update URL without reload
+                    history.pushState(null, null, targetId);
+                    
+                    // Close mobile menu
+                    navMenu.classList.remove('active');
+                    if (hamburger) hamburger.classList.remove('active');
+                }
+            } else if (href.includes('.html#')) {
+                // For cross-page anchors
+                const [page, anchor] = href.split('#');
+                if (window.location.pathname.includes(page)) {
+                    e.preventDefault();
+                    const targetSection = document.querySelector('#' + anchor);
+                    if (targetSection) {
+                        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
             }
         });
     }
 });
 
-// Scroll to Top Button
+// Enhanced Scroll to Top Button
 const scrollTopBtn = document.createElement('div');
 scrollTopBtn.className = 'scroll-top';
 scrollTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+scrollTopBtn.title = 'Нагору';
+scrollTopBtn.setAttribute('aria-label', 'Прокрутити нагору');
 document.body.appendChild(scrollTopBtn);
 
 window.addEventListener('scroll', () => {
@@ -93,9 +112,9 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// Add animation to elements
+// Add animation to elements (without initial opacity)
 document.querySelectorAll('.feature-card, .scenario-card, .stat-card').forEach(el => {
-    el.style.opacity = '0';
+    // Removed initial opacity setting for better UX
     observer.observe(el);
 });
 
@@ -104,8 +123,8 @@ const style = document.createElement('style');
 style.textContent = `
     @keyframes fadeInUp {
         from {
-            opacity: 0;
-            transform: translateY(30px);
+            opacity: 0.7;
+            transform: translateY(20px);
         }
         to {
             opacity: 1;
@@ -282,3 +301,24 @@ document.querySelectorAll('img[data-src]').forEach(img => {
 console.log('%c🚀 HR Integration System', 'color: #4F46E5; font-size: 24px; font-weight: bold;');
 console.log('%cРозроблено з ❤️ для Vira Games', 'color: #7C3AED; font-size: 14px;');
 console.log('%cАвтор: Дубовик Кирило', 'color: #6B7280; font-size: 12px;');
+
+// Simple search functionality for navigation
+const searchInput = document.getElementById('nav-search');
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        if (query.length > 2) {
+            // Simple search - redirect to docs page with search query
+            if (e.key === 'Enter') {
+                window.location.href = `docs.html?search=${encodeURIComponent(query)}`;
+            }
+        }
+    });
+    
+    // Handle Enter key
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && e.target.value.length > 0) {
+            window.location.href = `docs.html?search=${encodeURIComponent(e.target.value)}`;
+        }
+    });
+}

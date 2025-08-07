@@ -28,6 +28,10 @@
                 <li><a href="setup.html" class="nav-link active">Встановлення</a></li>
                 <li><a href="docs.html" class="nav-link">Документація</a></li>
             </ul>
+            <div class="nav-search">
+                <input type="text" class="nav-search-input" placeholder="Пошук..." id="nav-search">
+                <i class="fas fa-search"></i>
+            </div>
             <div class="hamburger">
                 <span></span>
                 <span></span>
@@ -53,9 +57,8 @@
                 <h3>Налаштування</h3>
                 <ul>
                     <li><a href="#n8n-setup" class="sidebar-link">n8n платформа</a></li>
-                    <li><a href="#credentials" class="sidebar-link">API ключі</a></li>
+                    <li><a href="#api-keys" class="sidebar-link">API ключі</a></li>
                     <li><a href="#webhooks" class="sidebar-link">Webhooks</a></li>
-                    <li><a href="#notion-setup" class="sidebar-link">Notion бази</a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
@@ -290,6 +293,35 @@ candidate.hired ✅</code></pre>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </section>
+
+            <!-- API Keys Section -->
+            <section id="api-keys" class="docs-section">
+                <h2>🔑 API ключі</h2>
+                <div class="config-block">
+                    <h3>Налаштування ключів доступу</h3>
+                    <p>Всі API ключі вже налаштовані в системі. При необхідності оновлення:</p>
+                    <ul class="checklist">
+                        <li><i class="fas fa-check"></i> TeamTailor API Token - в Settings → API</li>
+                        <li><i class="fas fa-check"></i> BambooHR API Key - в Account → API Keys</li>
+                        <li><i class="fas fa-check"></i> Notion Integration - в Settings → Integrations</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Webhooks Section -->
+            <section id="webhooks" class="docs-section">
+                <h2>🔗 Webhooks</h2>
+                <div class="config-block">
+                    <h3>Налаштування Webhooks</h3>
+                    <p>Webhook для TeamTailor вже налаштований:</p>
+                    <pre><code class="language-bash"># Endpoint URL
+https://viragamesinc.app.n8n.cloud/webhook/teamtailor-hired
+
+# Підписані події
+- candidate.hired
+- candidate.updated</code></pre>
                 </div>
             </section>
 

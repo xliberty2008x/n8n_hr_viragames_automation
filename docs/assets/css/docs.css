@@ -282,6 +282,8 @@ pre {
     overflow-x: auto;
     margin: 20px 0;
     position: relative;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 pre code {
@@ -289,6 +291,8 @@ pre code {
     font-family: 'Fira Code', 'Courier New', monospace;
     font-size: 0.9rem;
     line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 .code-wrapper {
