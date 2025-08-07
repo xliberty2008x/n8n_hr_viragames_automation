@@ -1,10 +1,4 @@
-name: Claude PR Action
-
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
-  id-token: write   # mandatory for OIDC
+name: Claude Code Assistant
 
 on:
   issue_comment:
@@ -12,37 +6,41 @@ on:
   pull_request_review_comment:
     types: [created]
   issues:
-    types: [opened, assigned]
+    types: [opened]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
-  claude-pr:
+  claude-code-action:
+    # Only run if @claude is mentioned
     if: |
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
       (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
       (github.event_name == 'issues' && contains(github.event.issue.body, '@claude'))
     runs-on: ubuntu-latest
-    env:
-      AWS_REGION: us-east-1
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Generate GitHub App token
-        id: app-token
-        uses: actions/create-github-app-token@v1
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          fetch-depth: 0
 
-      - name: Configure AWS credentials (OIDC)
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-east-1
 
-      - uses: ./.github/actions/claude-pr-action
+      - name: Run Claude Code Action
+        uses: anthropics/claude-code-action@beta
         with:
-          trigger_phrase: "@claude"
-          timeout_minutes: "60"
-          github_token: ${{ steps.app-token.outputs.token }}
           use_bedrock: "true"
-          model: "us.anthropic.claude-opus-4-1-20250805-v1:0"   # Using Claude Opus 4.1
+          aws_region: "us-east-1"
+          bedrock_model_id: "us.anthropic.claude-opus-4-1-20250805-v1:0"
+          timeout_minutes: "60"
+          mode: "tag"
