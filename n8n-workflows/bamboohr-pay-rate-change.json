@@ -1,0 +1,102 @@
+{
+  "name": "BambooHR Pay Rate Change Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bamboohr-pay-rate-webhook",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-receiver",
+      "name": "Webhook Receiver",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "bamboohr-pay-rate-change"
+    },
+    {
+      "parameters": {
+        "operation": "post",
+        "channel": "hr-legal",
+        "text": "=Зміна заробітньої плати з {{$json[\"pay_rate\"]}} для {{$json[\"employee_name\"]}} {{$json[\"employee_link\"]}}",
+        "options": {
+          "username": "HR Bot",
+          "icon_emoji": ":money_with_wings:"
+        }
+      },
+      "id": "slack-notification",
+      "name": "Send to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "credentials": {
+        "slackApi": {
+          "id": "1",
+          "name": "Slack API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Transform BambooHR data for Slack message\nconst webhookData = $input.first().json;\n\n// Extract employee information\nconst employeeFullName = webhookData.employee?.displayName || \n                        `${webhookData.employee?.firstName} ${webhookData.employee?.lastName}`;\n\n// Get the employee profile link\nconst employeeId = webhookData.employee?.id || webhookData.employeeId;\nconst employeeLink = `https://viragames.bamboohr.com/employees/employee.php?id=${employeeId}`;\n\n// Get pay rate change information\nconst newPayRate = webhookData.fields?.compensation || \n                   webhookData.fields?.rate || \n                   webhookData.rate || \n                   'N/A';\n\nreturn {\n  employee_name: employeeFullName,\n  employee_link: employeeLink,\n  pay_rate: newPayRate,\n  timestamp: new Date().toISOString(),\n  raw_data: webhookData\n};"
+      },
+      "id": "data-transformer",
+      "name": "Transform Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    }
+  ],
+  "connections": {
+    "webhook-receiver": {
+      "main": [
+        [
+          {
+            "node": "data-transformer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "data-transformer": {
+      "main": [
+        [
+          {
+            "node": "slack-notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "",
+    "timezone": "Europe/Kiev"
+  },
+  "versionId": "1",
+  "id": "bamboohr-pay-rate-change",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [
+    {
+      "name": "BambooHR",
+      "createdAt": "2025-01-07T12:00:00.000Z"
+    },
+    {
+      "name": "Slack",
+      "createdAt": "2025-01-07T12:00:00.000Z"
+    },
+    {
+      "name": "HR",
+      "createdAt": "2025-01-07T12:00:00.000Z"
+    }
+  ]
+}

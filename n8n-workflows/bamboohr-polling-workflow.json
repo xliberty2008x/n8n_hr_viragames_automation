@@ -1,0 +1,306 @@
+{
+  "name": "BambooHR Pay Rate Polling",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.bamboohr.com/api/gateway.php/viragames/v1/employees/changed",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "since",
+              "value": "={{$now.minus(30, 'minutes').toISO()}}"
+            },
+            {
+              "name": "type",
+              "value": "updated"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "fetch-changes",
+      "name": "Fetch BambooHR Changes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "2",
+          "name": "BambooHR API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Filter for pay rate changes\nconst employees = $input.first().json.employees || [];\nconst payRateChanges = [];\n\nfor (const employee of employees) {\n  // Fetch detailed employee data\n  const employeeId = employee.id;\n  \n  // Check if compensation field was changed\n  if (employee.changedFields && \n      (employee.changedFields.includes('compensation') || \n       employee.changedFields.includes('rate') ||\n       employee.changedFields.includes('payRate'))) {\n    \n    payRateChanges.push({\n      employeeId: employeeId,\n      employeeName: employee.displayName || `${employee.firstName} ${employee.lastName}`,\n      changedFields: employee.changedFields,\n      timestamp: employee.lastChanged\n    });\n  }\n}\n\nreturn payRateChanges;"
+      },
+      "id": "filter-pay-changes",
+      "name": "Filter Pay Rate Changes",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.length}}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "id": "if-changes-exist",
+      "name": "If Changes Exist",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.bamboohr.com/api/gateway.php/viragames/v1/employees/{{$json.employeeId}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "displayName,firstName,lastName,payRate,payRateEffectiveDate,compensation,department,jobTitle"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "get-employee-details",
+      "name": "Get Employee Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 280],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "2",
+          "name": "BambooHR API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Prepare Slack message\nconst employee = $input.first().json;\nconst previousData = $node[\"If Changes Exist\"].json;\n\nconst employeeLink = `https://viragames.bamboohr.com/employees/employee.php?id=${previousData.employeeId}`;\nconst payRate = employee.payRate || employee.compensation || 'N/A';\nconst employeeName = employee.displayName || `${employee.firstName} ${employee.lastName}`;\n\nreturn {\n  text: `Зміна заробітньої плати з ${payRate} для ${employeeName} ${employeeLink}`,\n  employee_name: employeeName,\n  employee_link: employeeLink,\n  pay_rate: payRate,\n  department: employee.department,\n  job_title: employee.jobTitle,\n  effective_date: employee.payRateEffectiveDate || new Date().toISOString()\n};"
+      },
+      "id": "prepare-message",
+      "name": "Prepare Slack Message",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1250, 280]
+    },
+    {
+      "parameters": {
+        "operation": "post",
+        "channel": "hr-legal",
+        "text": "={{$json.text}}",
+        "options": {
+          "username": "HR Bot",
+          "icon_emoji": ":money_with_wings:",
+          "attachments": [
+            {
+              "color": "#36a64f",
+              "fields": {
+                "item": [
+                  {
+                    "short": true,
+                    "title": "Employee",
+                    "value": "={{$json.employee_name}}"
+                  },
+                  {
+                    "short": true,
+                    "title": "New Pay Rate",
+                    "value": "={{$json.pay_rate}}"
+                  },
+                  {
+                    "short": true,
+                    "title": "Department",
+                    "value": "={{$json.department}}"
+                  },
+                  {
+                    "short": true,
+                    "title": "Job Title",
+                    "value": "={{$json.job_title}}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "id": "send-to-slack",
+      "name": "Send to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1450, 280],
+      "credentials": {
+        "slackApi": {
+          "id": "1",
+          "name": "Slack API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Store processed employee IDs to avoid duplicates\n// This should be connected to a database or file storage in production\n\nconst processedEmployees = $getWorkflowStaticData('processedEmployees') || [];\nconst currentEmployeeId = $node[\"If Changes Exist\"].json.employeeId;\nconst currentTimestamp = new Date().toISOString();\n\nif (!processedEmployees.includes(currentEmployeeId)) {\n  processedEmployees.push(currentEmployeeId);\n  $setWorkflowStaticData('processedEmployees', processedEmployees);\n}\n\nreturn {\n  success: true,\n  employeeId: currentEmployeeId,\n  processedAt: currentTimestamp\n};"
+      },
+      "id": "mark-as-processed",
+      "name": "Mark as Processed",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1650, 280]
+    }
+  ],
+  "connections": {
+    "schedule-trigger": {
+      "main": [
+        [
+          {
+            "node": "fetch-changes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fetch-changes": {
+      "main": [
+        [
+          {
+            "node": "filter-pay-changes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filter-pay-changes": {
+      "main": [
+        [
+          {
+            "node": "if-changes-exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if-changes-exist": {
+      "main": [
+        [
+          {
+            "node": "get-employee-details",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "get-employee-details": {
+      "main": [
+        [
+          {
+            "node": "prepare-message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prepare-message": {
+      "main": [
+        [
+          {
+            "node": "send-to-slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send-to-slack": {
+      "main": [
+        [
+          {
+            "node": "mark-as-processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "",
+    "timezone": "Europe/Kiev"
+  },
+  "versionId": "1",
+  "id": "bamboohr-polling",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [
+    {
+      "name": "BambooHR",
+      "createdAt": "2025-01-07T12:00:00.000Z"
+    },
+    {
+      "name": "Slack",
+      "createdAt": "2025-01-07T12:00:00.000Z"
+    },
+    {
+      "name": "HR",
+      "createdAt": "2025-01-07T12:00:00.000Z"
+    },
+    {
+      "name": "Polling",
+      "createdAt": "2025-01-07T12:00:00.000Z"
+    }
+  ]
+}
