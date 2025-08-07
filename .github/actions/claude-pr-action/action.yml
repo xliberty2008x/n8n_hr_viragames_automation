@@ -55,7 +55,7 @@ runs:
         # Prepare the prompt
         PROMPT="${{ steps.prompt.outputs.prompt }}"
         
-        # Create request body for Claude 3
+        # Create request body for Claude
         REQUEST_BODY=$(jq -n \
           --arg prompt "$PROMPT" \
           '{
@@ -69,8 +69,8 @@ runs:
             ]
           }')
         
-        # Save request body to file (AWS CLI needs file input for --body)
-        echo "$REQUEST_BODY" > /tmp/request.json
+        # Base64 encode the request body
+        REQUEST_B64=$(echo "$REQUEST_BODY" | base64 -w 0)
         
         # Call Bedrock and save response
         aws bedrock-runtime invoke-model \
@@ -78,14 +78,19 @@ runs:
           --model-id "$MODEL_ID" \
           --content-type application/json \
           --accept application/json \
-          --body file:///tmp/request.json \
+          --body "$REQUEST_B64" \
           /tmp/response.json
         
-        # Extract the response text
-        RESPONSE=$(cat /tmp/response.json | jq -r '.content[0].text // "No response from Claude"')
+        # Check if response file exists and has content
+        if [ -f /tmp/response.json ]; then
+          # Extract the response text
+          RESPONSE=$(cat /tmp/response.json | jq -r '.content[0].text // "No response from Claude"')
+        else
+          RESPONSE="Error: Failed to get response from Claude"
+        fi
         
         # Clean up temp files
-        rm -f /tmp/request.json /tmp/response.json
+        rm -f /tmp/response.json
         
         # Set output
         echo "answer<<EOF" >> $GITHUB_OUTPUT
