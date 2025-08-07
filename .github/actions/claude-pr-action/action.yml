@@ -15,11 +15,21 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install AWS CLI
+    - name: Install dependencies
       shell: bash
       run: |
+        # Install jq for JSON parsing
         sudo apt-get update -y
-        sudo apt-get install -y awscli jq
+        sudo apt-get install -y jq curl unzip
+        
+        # Install AWS CLI v2
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip -q awscliv2.zip
+        sudo ./aws/install
+        rm -rf awscliv2.zip aws/
+        
+        # Verify installation
+        aws --version
 
     - name: Build Claude prompt
       id: prompt
@@ -40,7 +50,7 @@ runs:
         # Prepare the prompt
         PROMPT="${{ steps.prompt.outputs.prompt }}"
         
-        # Create request body
+        # Create request body for Claude 3
         REQUEST_BODY=$(jq -n \
           --arg prompt "$PROMPT" \
           '{
@@ -54,14 +64,23 @@ runs:
             ]
           }')
         
-        # Call Bedrock
-        RESPONSE=$(aws bedrock-runtime invoke-model \
+        # Save request body to file (AWS CLI needs file input for --body)
+        echo "$REQUEST_BODY" > /tmp/request.json
+        
+        # Call Bedrock and save response
+        aws bedrock-runtime invoke-model \
           --region $AWS_REGION \
           --model-id "$MODEL_ID" \
           --content-type application/json \
           --accept application/json \
-          --body "$REQUEST_BODY" \
-          --output json /dev/stdout | jq -r '.content[0].text // .completion // "No response from Claude"')
+          --body file:///tmp/request.json \
+          /tmp/response.json
+        
+        # Extract the response text
+        RESPONSE=$(cat /tmp/response.json | jq -r '.content[0].text // "No response from Claude"')
+        
+        # Clean up temp files
+        rm -f /tmp/request.json /tmp/response.json
         
         # Set output
         echo "answer<<EOF" >> $GITHUB_OUTPUT
