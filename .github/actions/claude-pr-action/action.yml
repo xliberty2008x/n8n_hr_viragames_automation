@@ -22,11 +22,16 @@ runs:
         sudo apt-get update -y
         sudo apt-get install -y jq curl unzip
         
-        # Install AWS CLI v2
-        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-        unzip -q awscliv2.zip
-        sudo ./aws/install
-        rm -rf awscliv2.zip aws/
+        # Check if AWS CLI is already installed
+        if ! command -v aws &> /dev/null; then
+          echo "AWS CLI not found, installing..."
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip -q awscliv2.zip
+          sudo ./aws/install
+          rm -rf awscliv2.zip aws/
+        else
+          echo "AWS CLI already installed"
+        fi
         
         # Verify installation
         aws --version
