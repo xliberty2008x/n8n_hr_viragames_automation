@@ -1,78 +1,191 @@
 # CLAUDE.md
 
+**IMPORTANT: This is a website project. All issues and changes should be related to website content and structure.**
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
+## 📝 Progress Tracking
 
-This is a TeamTailor to BambooHR integration system that automatically creates employee records in BambooHR when candidates are hired in TeamTailor. The integration is triggered by webhook events and handles employee creation along with document uploads.
+**ALWAYS track your progress in this file when working on issues.**
 
-## Key Components
+### Current Progress
+- [x] Initial project exploration completed
+- [x] CLAUDE.md updated with comprehensive instructions
+- [x] Added BambooHR pay rate change feature to website (Scenario 4)
+- [x] Updated BambooHR pay rate change status to "Working" (2025-08-12)
 
-- **src/teamtailor_bamboohr_integration.py** - Main integration class that orchestrates the entire workflow
-- **src/bamboohr_client.py** - Dedicated BambooHR API client for common operations
-- **config/config.env** - Configuration file containing API credentials (not tracked in git)
+## 🌐 Project Overview
 
-## Development Commands
+This is a **GitHub Pages website** that documents the HR Integration System for Vira Games. The website showcases an automation system that integrates TeamTailor, BambooHR, Notion, and Slack through n8n workflows.
 
-### Setup and Dependencies
-```bash
-# Install dependencies
-pip install -r requirements.txt
+**Website URL:** Served from `/docs` directory via GitHub Pages
 
-# Create config file from example
-cp config/config.example.env config/config.env
-# Then edit config/config.env with your API credentials
+## 🎯 Purpose
+
+The website serves as:
+1. Documentation hub for HR automation workflows
+2. Setup guide for the integration system
+3. Troubleshooting resource for common issues
+4. Showcase of automation capabilities
+
+## 📁 Project Structure
+
+```
+n8n_hr_viragames_automation/
+├── docs/                        # GitHub Pages website root
+│   ├── index.html              # Landing page - system overview
+│   ├── setup.html              # Installation and setup guide
+│   ├── troubleshooting.html   # Common issues and solutions
+│   ├── docs.html               # Detailed technical documentation
+│   ├── assets/
+│   │   ├── css/               # Stylesheets
+│   │   │   ├── style.css      # Main styles
+│   │   │   └── docs.css       # Documentation-specific styles
+│   │   ├── js/                # JavaScript files
+│   │   │   ├── main.js        # Main interactivity
+│   │   │   └── docs.js        # Documentation navigation
+│   │   └── img/               # Images and icons
+│   │       ├── bamboohr-icon.svg
+│   │       ├── n8n-icon.svg
+│   │       └── teamtailor-icon.svg
+│   └── LOOM_VIDEO_INSTRUCTIONS.md
+├── .github/workflows/          # GitHub Actions automation
+└── CLAUDE.md                   # This file - project instructions
 ```
 
-### Running Tests
-```bash
-# Test BambooHR connection
-python test_connection.py
+## 💻 Technology Stack
 
-# Run integration test scenarios
-python test_integration_scenarios.py
+- **Frontend:** Pure HTML, CSS, JavaScript (no framework)
+- **Styling:** Custom CSS with responsive design
+- **Icons:** Font Awesome + custom SVGs
+- **Typography:** Google Fonts (Inter)
+- **Code Highlighting:** Prism.js
+- **Video:** Loom embeds for demonstrations
 
-# Test with actual payload
-python example_usage.py
-```
+## 📄 Website Pages
 
-### No Linting/Type Checking Tools
-This project currently doesn't have configured linting or type checking tools. Consider adding:
-- `ruff` or `flake8` for linting
-- `mypy` for type checking
-- `black` for code formatting
+### 1. Landing Page (`index.html`)
+- Hero section with key metrics
+- Features overview
+- Architecture diagram
+- Three main automation scenarios
+- Video presentation
+- Call-to-action sections
 
-## Architecture Overview
+### 2. Setup Guide (`setup.html`)
+- Prerequisites and requirements
+- Step-by-step installation
+- Configuration instructions
+- Testing procedures
 
-### Integration Flow
-1. **Webhook Receipt**: TeamTailor sends webhook when candidate reaches "Hired" stage
-2. **Validation**: Integration validates the webhook payload and event type
-3. **Data Retrieval**: 
-   - Fetches job requisition details from TeamTailor
-   - Downloads candidate documents/attachments
-4. **Employee Creation**: 
-   - Builds employee payload with department mapping
-   - Creates employee record in BambooHR
-5. **Document Upload**: Uploads all candidate documents to the employee's BambooHR profile
+### 3. Documentation (`docs.html`)
+- Comprehensive technical details
+- API integrations documentation
+- Workflow descriptions
+- Error handling with AI
+- Best practices
 
-### Key Methods in TeamTailorBambooHRIntegration
+### 4. Troubleshooting (`troubleshooting.html`)
+- Common issues and solutions
+- Debugging guides
+- FAQ section
 
-- `process_webhook_payload()` - Main entry point that orchestrates the entire flow
-- `validate_webhook_payload()` - Ensures webhook is for "Hired" stage
-- `check_employee_exists()` - Prevents duplicate employee creation
-- `build_employee_payload()` - Maps TeamTailor data to BambooHR format
-- `upload_files_to_bamboohr()` - Handles document uploads with retry logic
-- `get_supported_filename()` - Converts unsupported file extensions
+## 🎨 Design System
 
-### Configuration Requirements
-The integration requires API credentials in `config/config.env`:
-- `BAMBOOHR_COMPANY_DOMAIN` - Your BambooHR subdomain
-- `BAMBOOHR_API_KEY` - BambooHR API key
-- `TEAMTAILOR_API_TOKEN` - TeamTailor API token
+### Colors
+- Primary: Blue (#007bff)
+- Success: Green (#28a745)
+- Warning: Yellow (#ffc107)
+- Danger: Red (#dc3545)
+- Dark backgrounds with light text
 
-### Recent Improvements (January 2025)
-- Removed TEST_ prefix from employee names for production use
-- Fixed file upload JSON parsing errors
-- Added support for unsupported file extensions (.twbx, .pptx)
-- Improved error reporting with partial success indicators
-- Added duplicate employee detection and handling
+### Components
+- Cards for features and scenarios
+- Alert boxes for important information
+- Code blocks with syntax highlighting
+- Interactive navigation with search
+- Responsive mobile menu
+
+## 📝 Content Guidelines
+
+When adding new content:
+
+1. **Language:** Ukrainian (UA) for all user-facing content
+2. **Tone:** Professional but approachable
+3. **Structure:** Use semantic HTML5 elements
+4. **Accessibility:** Include proper ARIA labels and alt text
+5. **Performance:** Optimize images and minimize JavaScript
+
+## 🔧 Development Guidelines
+
+### For Website Updates
+
+1. **HTML Structure:**
+   - Use semantic HTML5 tags
+   - Maintain consistent indentation
+   - Include proper meta tags
+
+2. **CSS Styling:**
+   - Follow BEM methodology where applicable
+   - Use CSS variables for theme consistency
+   - Ensure mobile responsiveness
+
+3. **JavaScript:**
+   - Keep scripts modular
+   - Use vanilla JavaScript (no jQuery)
+   - Ensure graceful degradation
+
+4. **Content Updates:**
+   - Verify all links work
+   - Test on multiple browsers
+   - Check mobile responsiveness
+
+### For New Features
+
+1. Identify the appropriate page for the content
+2. Follow existing HTML structure patterns
+3. Apply consistent styling using existing CSS classes
+4. Update navigation if adding new sections
+5. Test thoroughly before committing
+
+## 🚀 Current Features
+
+### Implemented Automations
+
+1. **Department Synchronization**
+   - Notion ↔ TeamTailor sync
+   - Weekly scheduled runs
+   - 1-2 minute execution
+
+2. **Job Requisition Creation**
+   - Notion → TeamTailor
+   - Triggered on demand
+   - 30 second execution
+
+3. **Employee Onboarding**
+   - TeamTailor → BambooHR
+   - Webhook triggered
+   - 2-3 minute execution
+
+### Working Features
+
+4. **BambooHR Pay Rate Change Notifications**
+   - BambooHR → Slack notifications
+   - Webhook triggered
+   - Instant execution
+   - Status: ✅ Working in production
+
+## 🔄 GitHub Actions Integration
+
+The repository includes GitHub workflows that:
+- Automate deployment to GitHub Pages
+- Integrate with Claude agent for code assistance
+- Handle automated testing and validation
+
+## 📋 Important Notes
+
+1. **Every issue is website-related** - All changes should update website content or structure
+2. **Track progress here** - Update this file with your progress on issues
+3. **Test locally first** - Verify changes before pushing
+4. **Maintain consistency** - Follow existing patterns and styles
+5. **Document changes** - Update relevant documentation when adding features
