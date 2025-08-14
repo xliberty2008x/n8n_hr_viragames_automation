@@ -62,7 +62,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Token token=rddtbCpJh6CBefTGkNTalKDdLOaVyVQ-3m86RcU7"
+              "value": "Token token={{YOUR_TEAMTAILOR_API_TOKEN}}"
             },
             {
               "name": "X-Api-Version",
@@ -321,7 +321,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Token token=rddtbCpJh6CBefTGkNTalKDdLOaVyVQ-3m86RcU7"
+              "value": "Token token={{YOUR_TEAMTAILOR_API_TOKEN}}"
             },
             {
               "name": "X-Api-Version",
