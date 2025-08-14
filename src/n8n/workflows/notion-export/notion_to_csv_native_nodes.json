@@ -1,0 +1,271 @@
+{
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "WEBHOOK_ID_01_PLACEHOLDER",
+        "name": "Manual Trigger",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -880,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "databasePage",
+          "operation": "getAll",
+          "databaseId": {
+            "__rl": true,
+            "value": "=https://www.notion.so/viragames/NOTION_DATABASE_ID_01_PLACEHOLDER?v=NOTION_DATABASE_ID_02_PLACEHOLDER",
+            "mode": "url"
+          },
+          "returnAll": true,
+          "options": {
+            "downloadFiles": false
+          }
+        },
+        "id": "WEBHOOK_ID_02_PLACEHOLDER",
+        "name": "Get Notion Database",
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2,
+        "position": [
+          -608,
+          240
+        ],
+        "credentials": {
+          "notionApi": {
+            "id": "CREDENTIAL_ID_01_PLACEHOLDER",
+            "name": "Manager's Home"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "aggregateItems"
+        },
+        "id": "WEBHOOK_ID_03_PLACEHOLDER",
+        "name": "Aggregate Data",
+        "type": "n8n-nodes-base.itemLists",
+        "typeVersion": 3.1,
+        "position": [
+          -96,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "formatItems"
+        },
+        "id": "WEBHOOK_ID_04_PLACEHOLDER",
+        "name": "Format for CSV",
+        "type": "n8n-nodes-base.itemLists",
+        "typeVersion": 3.1,
+        "position": [
+          112,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "toFile",
+          "fileFormat": "csv",
+          "options": {
+            "fileName": "={{ $('Set Parameters').item.json.fileName }}",
+            "headerRow": true
+          }
+        },
+        "id": "WEBHOOK_ID_05_PLACEHOLDER",
+        "name": "Convert to CSV",
+        "type": "n8n-nodes-base.spreadsheetFile",
+        "typeVersion": 2,
+        "position": [
+          320,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "fileName": "={{ $('Set Parameters').item.json.fileName }}",
+          "options": {}
+        },
+        "id": "WEBHOOK_ID_06_PLACEHOLDER",
+        "name": "Write File",
+        "type": "n8n-nodes-base.writeBinaryFile",
+        "typeVersion": 1,
+        "position": [
+          512,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "WEBHOOK_ID_07_PLACEHOLDER",
+        "name": "Success Output",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          720,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "block",
+          "operation": "getAll",
+          "blockId": {
+            "__rl": true,
+            "value": "={{ $json.id }}",
+            "mode": "id"
+          },
+          "returnAll": true
+        },
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2,
+        "position": [
+          -368,
+          240
+        ],
+        "id": "WEBHOOK_ID_08_PLACEHOLDER",
+        "name": "Get many child blocks",
+        "credentials": {
+          "notionApi": {
+            "id": "CREDENTIAL_ID_01_PLACEHOLDER",
+            "name": "Manager's Home"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2.1,
+        "position": [
+          -16,
+          -96
+        ],
+        "id": "WEBHOOK_ID_09_PLACEHOLDER",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4o",
+            "mode": "list",
+            "cachedResultName": "gpt-4o"
+          },
+          "options": {
+            "responseFormat": "json_object"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          -192,
+          80
+        ],
+        "id": "WEBHOOK_ID_10_PLACEHOLDER",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "CREDENTIAL_ID_02_PLACEHOLDER",
+            "name": "N8N_Test_Key"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Manual Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get Notion Database",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Notion Database": {
+        "main": [
+          [
+            {
+              "node": "Get many child blocks",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate Data": {
+        "main": [
+          [
+            {
+              "node": "Format for CSV",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format for CSV": {
+        "main": [
+          [
+            {
+              "node": "Convert to CSV",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convert to CSV": {
+        "main": [
+          [
+            {
+              "node": "Write File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Write File": {
+        "main": [
+          [
+            {
+              "node": "Success Output",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many child blocks": {
+        "main": [
+          []
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "NOTION_DATABASE_ID_03_PLACEHOLDERNOTION_DATABASE_ID_04_PLACEHOLDER"
+    }
+  }

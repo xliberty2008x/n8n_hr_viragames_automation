@@ -1,0 +1,348 @@
+{
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "WEBHOOK_ID_01_PLACEHOLDER",
+        "name": "Manual Trigger",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -1424,
+          16
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "databasePage",
+          "operation": "getAll",
+          "databaseId": {
+            "__rl": true,
+            "value": "https://www.notion.so/viragames/NOTION_DATABASE_ID_01_PLACEHOLDER?v=NOTION_DATABASE_ID_02_PLACEHOLDER",
+            "mode": "url"
+          },
+          "returnAll": true,
+          "options": {
+            "downloadFiles": false
+          }
+        },
+        "id": "WEBHOOK_ID_02_PLACEHOLDER",
+        "name": "Get Notion Database",
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2,
+        "position": [
+          -1152,
+          16
+        ],
+        "credentials": {
+          "notionApi": {
+            "id": "CREDENTIAL_ID_01_PLACEHOLDER",
+            "name": "Manager's Home"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "batchSize": 1,
+          "options": {}
+        },
+        "id": "WEBHOOK_ID_03_PLACEHOLDER",
+        "name": "Split Pages",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          -512,
+          16
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "block",
+          "operation": "getAll",
+          "blockId": {
+            "__rl": true,
+            "value": "={{ $json.id }}",
+            "mode": "id"
+          },
+          "returnAll": true
+        },
+        "id": "WEBHOOK_ID_04_PLACEHOLDER",
+        "name": "Get Page Blocks",
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2,
+        "position": [
+          -256,
+          464
+        ],
+        "credentials": {
+          "notionApi": {
+            "id": "CREDENTIAL_ID_01_PLACEHOLDER",
+            "name": "Manager's Home"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Combine properties + blocks into a single object for AI\nconst page = $('Split Pages').first().json;\nconst blocks = $input.all();\nconst properties = {};\nfor (const [key, value] of Object.entries(page)) { if (key.startsWith('property_')) properties[key.replace('property_','')] = value; }\nfunction textFromBlock(b){ const t=b.json.type; if(b.json.content) return b.json.content; const rich=b.json[t]?.rich_text; if(Array.isArray(rich)) return rich.map(x=>x.plain_text).join(''); return ''; }\nconst content = blocks.map(textFromBlock).filter(Boolean).join('\\n');\nreturn [{ json: { id: page.id, name: page.name || properties.summary || 'Untitled', url: page.url, properties, content } }];"
+        },
+        "id": "WEBHOOK_ID_05_PLACEHOLDER",
+        "name": "Assemble Page Data",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -80,
+          464
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json }}",
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "You are a senior project management assistant. Analyze a Notion task object containing properties and extracted page content and return a STRICT JSON object only, no prose. Required keys: task_name, status, assignee, responsible, priority, team, dates {start, due, end}, achievement_summary (2-3 sentences), key_points (array of 3-7 concise bullets), completion_status (integer 0-100), next_steps (one short sentence). Rules: 1) Prefer explicit property values (e.g., property_status) over guesses; 2) If a value is missing use empty string or [] (not null); 3) Map emails or names from assignee/responsible arrays to string (single value if one, else join by '; '); 4) Derive summary ONLY from description/content; 5) Do not include markdown or code fences; 6) Ensure valid JSON."
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2.1,
+        "position": [
+          112,
+          464
+        ],
+        "id": "WEBHOOK_ID_06_PLACEHOLDER",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4o",
+            "mode": "list"
+          },
+          "options": {
+            "responseFormat": "json_object",
+            "temperature": 0.2
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          112,
+          768
+        ],
+        "id": "WEBHOOK_ID_07_PLACEHOLDER",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "CREDENTIAL_ID_02_PLACEHOLDER",
+            "name": "N8N_Test_Key"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "let r=$input.first().json; let m = r.output ?? r.message ?? r; if (m && typeof m === 'object' && m.text) m = m.text; if (typeof m === 'string') { try { m = JSON.parse(m); } catch (e) { const match = m.match(/\\{[\\s\\S]*\\}/); if (match) { try { m = JSON.parse(match[0]); } catch { m = { error: 'AI output not JSON', raw: m }; } } else { m = { error: 'AI output not JSON', raw: m }; } } } const source=$('Assemble Page Data').first().json; return [{ json: { ...m, original_url: source.url, original_id: source.id, original_properties: source.properties } }];"
+        },
+        "id": "WEBHOOK_ID_08_PLACEHOLDER",
+        "name": "Process AI JSON",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          512,
+          464
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $items('Process AI JSON', 0, 0).map(i=>i.json); return [{ json: { all_summaries: items, total: items.length } }];"
+        },
+        "id": "WEBHOOK_ID_09_PLACEHOLDER",
+        "name": "Collect All Summaries",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -256,
+          -416
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const data=$input.first().json.all_summaries || []; return data.map(task=>({ json: { 'Task Name': task.task_name || 'Untitled', 'Status': task.status || '', 'Assignee': Array.isArray(task.assignee)?task.assignee.join('; '):task.assignee||'', 'Responsible': Array.isArray(task.responsible)?task.responsible.join('; '):task.responsible||'', 'Priority': task.priority||'', 'Team': task.team||'', 'Start Date': task.dates?.start||'', 'Due Date': task.dates?.due||'', 'End Date': task.dates?.end||'', 'Achievement Summary': task.achievement_summary||'', 'Key Points': Array.isArray(task.key_points)?task.key_points.join('; '):'', 'Completion %': task.completion_status ?? '', 'Next Steps': task.next_steps||'', 'URL': task.original_url||'' } }));"
+        },
+        "id": "WEBHOOK_ID_10_PLACEHOLDER",
+        "name": "Prepare CSV Data",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -32,
+          -416
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "toFile",
+          "fileFormat": "csv",
+          "options": {
+            "fileName": "notion_task_summaries_{{$now.format('yyyyMMdd_HHmmss')}}.csv",
+            "headerRow": true
+          }
+        },
+        "id": "WEBHOOK_ID_11_PLACEHOLDER",
+        "name": "Export to CSV",
+        "type": "n8n-nodes-base.spreadsheetFile",
+        "typeVersion": 2,
+        "position": [
+          192,
+          -416
+        ]
+      },
+      {
+        "parameters": {
+          "fileName": "notion_task_summaries_{{$now.format('yyyyMMdd_HHmmss')}}.csv",
+          "options": {}
+        },
+        "id": "WEBHOOK_ID_12_PLACEHOLDER",
+        "name": "Save CSV File",
+        "type": "n8n-nodes-base.writeBinaryFile",
+        "typeVersion": 1,
+        "position": [
+          416,
+          -416
+        ]
+      }
+    ],
+    "connections": {
+      "Manual Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get Notion Database",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Notion Database": {
+        "main": [
+          [
+            {
+              "node": "Split Pages",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+          "Split Pages": {
+      "main": [
+        [
+          {
+            "node": "Get Page Blocks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Collect All Summaries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+      "Get Page Blocks": {
+        "main": [
+          [
+            {
+              "node": "Assemble Page Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Assemble Page Data": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Process AI JSON",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Process AI JSON": {
+        "main": [
+          [
+            {
+              "node": "Split Pages",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Collect All Summaries": {
+        "main": [
+          [
+            {
+              "node": "Prepare CSV Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare CSV Data": {
+        "main": [
+          [
+            {
+              "node": "Export to CSV",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Export to CSV": {
+        "main": [
+          [
+            {
+              "node": "Save CSV File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "NOTION_DATABASE_ID_03_PLACEHOLDERNOTION_DATABASE_ID_04_PLACEHOLDER"
+    }
+  }

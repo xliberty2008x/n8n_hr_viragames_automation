@@ -62,3 +62,30 @@ docs/.jekyll-cache/
 # Secrets
 secrets/
 credentials/
+
+# n8n Workflow Security
+# Never commit workflows with real sensitive data
+src/n8n/*-with-secrets.json
+src/n8n/*-production.json
+src/n8n/*.local.json
+workflows-backup/
+**/config.env
+**/config.local.env
+
+# Sensitive Analysis Reports
+sensitive_data_analysis_report.md
+sanitize_workflows.py
+analyze_sensitive_data.py
+
+# n8n Export Files (may contain sensitive data)
+n8n-export-*.json
+*-export-*.json
+
+# API Keys and Tokens
+*.api-key
+*.token
+*.secret
+
+# Webhook configurations
+webhook-config.json
+webhooks.json

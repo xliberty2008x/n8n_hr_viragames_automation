@@ -7,10 +7,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -480,
-        928
+        -432,
+        1200
       ],
-      "id": "a407b339-335e-44fe-8198-46852a1ccfa4",
+      "id": "WEBHOOK_ID_01_PLACEHOLDER",
       "name": "convert to json object4"
     },
     {
@@ -41,14 +41,14 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -704,
-        928
+        -656,
+        1200
       ],
-      "id": "9fb38a0c-1ba6-4da4-94b0-e881e12a1696",
+      "id": "WEBHOOK_ID_02_PLACEHOLDER",
       "name": "HTTP Request Users",
       "credentials": {
         "httpBearerAuth": {
-          "id": "JNoBFOypI7HysyPY",
+          "id": "CREDENTIAL_ID_03_PLACEHOLDER",
           "name": "TeamTailor"
         }
       }
@@ -83,10 +83,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1760,
-        384
+        1808,
+        656
       ],
-      "id": "ae089df3-1ac3-4a99-b6f8-be9146c8c417",
+      "id": "WEBHOOK_ID_03_PLACEHOLDER",
       "name": "Create new requisition2",
       "onError": "continueErrorOutput"
     },
@@ -121,14 +121,14 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        2208,
-        224
+        2256,
+        496
       ],
-      "id": "f0f9bd15-fc9d-43c8-a853-5032dfc33985",
+      "id": "WEBHOOK_ID_04_PLACEHOLDER",
       "name": "Update Requisition Page",
       "credentials": {
         "notionApi": {
-          "id": "dvG81BygcxjHVM4C",
+          "id": "CREDENTIAL_ID_01_PLACEHOLDER",
           "name": "Manager's Home"
         }
       }
@@ -160,14 +160,14 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        2240,
-        560
+        2288,
+        832
       ],
-      "id": "55efc6fe-63f5-41e1-8549-d39ac5831271",
+      "id": "WEBHOOK_ID_05_PLACEHOLDER",
       "name": "Update Requisition In Case Of An Error",
       "credentials": {
         "notionApi": {
-          "id": "dvG81BygcxjHVM4C",
+          "id": "CREDENTIAL_ID_01_PLACEHOLDER",
           "name": "Manager's Home"
         }
       }
@@ -181,10 +181,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.7,
       "position": [
-        2608,
-        224
+        2656,
+        496
       ],
-      "id": "67f148b6-fa92-4bbb-80e6-ee9eed0f3e04",
+      "id": "WEBHOOK_ID_06_PLACEHOLDER",
       "name": "Prettify JSON object to MD text"
     },
     {
@@ -199,14 +199,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        2944,
-        768
+        2992,
+        1040
       ],
-      "id": "cac65330-6f6f-43fd-9f06-4879c00c12ed",
+      "id": "WEBHOOK_ID_07_PLACEHOLDER",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "2kX9gdgCyRSPWTXu",
+          "id": "CREDENTIAL_ID_02_PLACEHOLDER",
           "name": "N8N_Test_Key"
         }
       }
@@ -220,10 +220,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.7,
       "position": [
-        2624,
-        560
+        2672,
+        832
       ],
-      "id": "5249aafc-d879-4f49-bcb5-7205b534d9e4",
+      "id": "WEBHOOK_ID_08_PLACEHOLDER",
       "name": "Prettify JSON object to MD text1"
     },
     {
@@ -245,14 +245,14 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -1088,
-        928
+        -1040,
+        1200
       ],
-      "id": "3040d5b9-837f-487b-8b3b-ca060d05e6f7",
+      "id": "WEBHOOK_ID_09_PLACEHOLDER",
       "name": "Slack Lookup by Email",
       "credentials": {
         "slackApi": {
-          "id": "h4hYe6hY0YHsd0no",
+          "id": "CREDENTIAL_ID_04_PLACEHOLDER",
           "name": "Vira Bot"
         }
       }
@@ -272,15 +272,15 @@
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
       "position": [
-        3248,
-        -48
+        3296,
+        224
       ],
-      "id": "48060901-86a8-4cc5-9b65-25792c609795",
+      "id": "WEBHOOK_ID_10_PLACEHOLDER",
       "name": "Send Message to recruit-team",
-      "webhookId": "25c8010f-de82-4b4c-b1ed-fe2633977d6f",
+      "webhookId": "WEBHOOK_ID_11_PLACEHOLDER",
       "credentials": {
         "slackApi": {
-          "id": "h4hYe6hY0YHsd0no",
+          "id": "CREDENTIAL_ID_04_PLACEHOLDER",
           "name": "Vira Bot"
         }
       }
@@ -299,15 +299,15 @@
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
       "position": [
-        3248,
-        352
+        3296,
+        624
       ],
-      "id": "69f68081-b3d5-46d6-9302-5a208055a083",
+      "id": "WEBHOOK_ID_12_PLACEHOLDER",
       "name": "Send Personal Message to Job Owner",
-      "webhookId": "8073afab-cc81-423e-aa89-2ff7281f95f6",
+      "webhookId": "WEBHOOK_ID_13_PLACEHOLDER",
       "credentials": {
         "slackApi": {
-          "id": "h4hYe6hY0YHsd0no",
+          "id": "CREDENTIAL_ID_04_PLACEHOLDER",
           "name": "Vira Bot"
         }
       }
@@ -342,10 +342,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1760,
-        1168
+        1808,
+        1440
       ],
-      "id": "32f1db12-ed6b-40fc-a634-0da4ecf75f4c",
+      "id": "WEBHOOK_ID_14_PLACEHOLDER",
       "name": "Update new requisition",
       "onError": "continueErrorOutput"
     },
@@ -376,14 +376,14 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        2288,
-        1184
+        2336,
+        1456
       ],
-      "id": "0747c1a1-7c47-4720-a404-e4b09b59f590",
+      "id": "WEBHOOK_ID_15_PLACEHOLDER",
       "name": "Update Requisition In Case Of An Error1",
       "credentials": {
         "notionApi": {
-          "id": "dvG81BygcxjHVM4C",
+          "id": "CREDENTIAL_ID_01_PLACEHOLDER",
           "name": "Manager's Home"
         }
       }
@@ -402,15 +402,15 @@
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
       "position": [
-        2288,
-        960
+        2336,
+        1232
       ],
-      "id": "4bd4a42d-cdc6-457b-af5d-9c4cd5aff61d",
+      "id": "WEBHOOK_ID_16_PLACEHOLDER",
       "name": "Send Personal Message to Job Owner1",
-      "webhookId": "8073afab-cc81-423e-aa89-2ff7281f95f6",
+      "webhookId": "WEBHOOK_ID_13_PLACEHOLDER",
       "credentials": {
         "slackApi": {
-          "id": "h4hYe6hY0YHsd0no",
+          "id": "CREDENTIAL_ID_04_PLACEHOLDER",
           "name": "Vira Bot"
         }
       }
@@ -438,14 +438,14 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        2048,
-        960
+        2096,
+        1232
       ],
-      "id": "dc2bec4d-c142-4c50-8897-4ff79462e184",
+      "id": "WEBHOOK_ID_17_PLACEHOLDER",
       "name": "Update Requisition Page1",
       "credentials": {
         "notionApi": {
-          "id": "dvG81BygcxjHVM4C",
+          "id": "CREDENTIAL_ID_01_PLACEHOLDER",
           "name": "Manager's Home"
         }
       }
@@ -463,14 +463,14 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        -1408,
-        928
+        -1360,
+        1200
       ],
-      "id": "fbc72be2-880e-4409-9dc4-8c194e007496",
+      "id": "WEBHOOK_ID_18_PLACEHOLDER",
       "name": "Get Database Page by Id",
       "credentials": {
         "notionApi": {
-          "id": "dvG81BygcxjHVM4C",
+          "id": "CREDENTIAL_ID_01_PLACEHOLDER",
           "name": "Manager's Home"
         }
       }
@@ -496,7 +496,7 @@
                       "operation": "false",
                       "singleValue": true
                     },
-                    "id": "28c0ea03-1ef2-4b46-be52-9820f7501a7e"
+                    "id": "WEBHOOK_ID_19_PLACEHOLDER"
                   }
                 ],
                 "combinator": "and"
@@ -514,7 +514,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "a1b332e4-ee93-44e5-a7bc-2aeb7fee16f1",
+                    "id": "WEBHOOK_ID_20_PLACEHOLDER",
                     "leftValue": "={{ $json.isUpdate }}",
                     "rightValue": "",
                     "operator": {
@@ -536,10 +536,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        784,
-        928
+        832,
+        1200
       ],
-      "id": "ba22877a-85ce-4baa-845c-e6ece1b51021",
+      "id": "WEBHOOK_ID_21_PLACEHOLDER",
       "name": "Create or Update"
     },
     {
@@ -561,14 +561,14 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1024,
-        1168
+        1072,
+        1440
       ],
-      "id": "4f3a5086-7ff5-47d2-92bc-9bd292358d84",
+      "id": "WEBHOOK_ID_22_PLACEHOLDER",
       "name": "Get The Requisition in TT",
       "credentials": {
         "httpBearerAuth": {
-          "id": "JNoBFOypI7HysyPY",
+          "id": "CREDENTIAL_ID_03_PLACEHOLDER",
           "name": "TeamTailor"
         }
       }
@@ -584,7 +584,7 @@
           },
           "conditions": [
             {
-              "id": "4169d208-77d5-4033-a89a-22fe84b71b59",
+              "id": "WEBHOOK_ID_23_PLACEHOLDER",
               "leftValue": "={{ $json.data.parseJson().data.attributes['archived-at'] }}",
               "rightValue": "",
               "operator": {
@@ -602,23 +602,23 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1264,
-        1168
+        1312,
+        1440
       ],
-      "id": "405781d8-29f9-4f44-bb03-09a994665103",
+      "id": "WEBHOOK_ID_24_PLACEHOLDER",
       "name": "Check wether requisition archived or not"
     },
     {
       "parameters": {
-        "jsCode": "/* ───── helpers ──────────────────────────────────────────────────────── */\nconst isoCountry = (label) => ({\n  Ukraine: 'UA',\n  Poland : 'PL',\n  Germany: 'DE',\n  'United States': 'US',\n}[label] || label);                 // fallback: use the label itself\n\n/* ───── gather inputs ───────────────────────────────────────────────── */\n// Get data from the simplified schema of Get Database Page by Id\nconst pageData = $('Get Database Page by Id').first().json;\n\n/* Notion look‑ups already performed upstream */\nconst deptNode  = $('Find Department page').first().json;\nconst roleNode  = $('Find Role page').first().json;\nconst teamNode  = $('Find Team page').first().json;\nconst userNode  = $('convert to json object4').first().json;\n\n/* IDs & names */\nconst ttId   = pageData.property_tt_requisition_id?.trim() || null;\nconst isUpdate = !!ttId;                           // ← create vs update\n\nconst departmentId = deptNode?.property_tt_department_id?.trim() || null;\nconst roleId       = roleNode?.property_tt_role_id?.trim()         || null;\nconst teamName     = teamNode?.name                                || null;\nconst userId       = userNode?.data?.[0]?.id?.trim()               || null;\n\n/* ───── salary logic ───────────────────────────────────────────────── */\nconst wantRange = pageData.property_need_salary_range ?? true;\nlet minSalary   = null;\nlet maxSalary   = null;\n\nif (wantRange) {\n  minSalary = pageData.property_min_salary ?? null;\n  maxSalary = pageData.property_max_salary ?? null;\n} else {\n  const fixed = pageData.property_fixed_salary ?? null;\n  if (fixed !== null) {\n    minSalary = fixed - 1;      // TT requires both even if equal\n    maxSalary = fixed;\n  }\n}\n\n/* ───── relationships ──────────────────────────────────────────────── */\nconst relationships = {\n  location:  { data: { id: '1200146', type: 'locations'  } },  // constant\n};\nif (departmentId) relationships.department = { data: { id: departmentId, type: 'departments' } };\nif (roleId)       relationships.role       = { data: { id: roleId,       type: 'roles'       } };\nif (userId)       relationships.user       = { data: { id: userId,       type: 'users'       } };\n\n/* ───── extract date values ─────────────────────────────────────────── */\nconst desireStartDate = pageData.property_desire_start_day_of_newcomer?.start ?? null;\n\n/* ───── payload ─────────────────────────────────────────────────────── */\nconst payload = {\n  data: {\n    type: 'requisitions',\n    ...(isUpdate ? { id: ttId } : {}),            // add id only on update\n    attributes: {\n      'job-title':          pageData.property_name ?? '',\n      'job-description':    pageData.property_job_description ?? '',\n      country:              isoCountry(pageData.property_country ?? ''),\n      'min-salary':         minSalary,\n      'max-salary':         maxSalary,\n      currency:             'USD',\n      'salary-time-unit':   (pageData.property_salary_period ?? '').toLowerCase(),\n      'number-of-openings': pageData.property_expected_number_of_hires ?? null,\n      'custom-form-answers': {\n        desire_start_day:       desireStartDate,\n        priority_of_position:   pageData.property_priority_of_position ?? null,\n        level_of_candidate:     pageData.property_level_of_candidate ?? null,\n        team:                   teamName,\n        reason:                 Array.isArray(pageData.property_reason) ? pageData.property_reason.join(', ') : (pageData.property_reason ?? ''),\n        will_there_be_a_test_task:\n                                 pageData.property_will_there_be_a_test_task ?? null,\n        please_define_hiring_stages:\n                                 pageData.property_please_define_hiring_stages ?? '',\n        key_competencies_for_position:\n                                 pageData.property_key_competencies_for_position ?? '',\n        additional_comments_for_recruiter_or_approval:\n                                 pageData.property_additional_comments_for_recruiter_or_approval ?? ''\n      },\n      status: 'pending'\n    },\n    relationships\n  }\n};\n\n/* ───── output ──────────────────────────────────────────────────────── */\nreturn {\n  payload,\n  isUpdate,\n  ttId,\n};"
+        "jsCode": "/* ───── helpers ──────────────────────────────────────────────────────── */\nconst isoCountry = (label) => ({\n  Ukraine: 'UA',\n  Poland : 'PL',\n  Germany: 'DE',\n  'United States': 'US',\n}[label] || label);                 // fallback: use the label itself\n\n/* ───── Job Description Formatter ───────────────────────────────────── */\nconst formatJobDescription = (description) => {\n  // Handle empty or null description\n  if (!description) return '';\n  \n  let formatted = '';\n  \n  // Handle array format (Notion rich text)\n  if (Array.isArray(description)) {\n    const textParts = [];\n    for (const item of description) {\n      if (typeof item === 'object' && item !== null) {\n        if (item.text && item.text.content) {\n          textParts.push(item.text.content);\n        } else if (item.plain_text) {\n          textParts.push(item.plain_text);\n        } else {\n          textParts.push(String(item));\n        }\n      } else {\n        textParts.push(String(item));\n      }\n    }\n    formatted = textParts.join('');\n  } else {\n    // Handle string format\n    formatted = String(description).trim();\n  }\n  \n  // Process line by line to preserve indentation\n  const lines = formatted.split('\\n');\n  const processedLines = [];\n  \n  for (const line of lines) {\n    // Calculate indentation\n    const stripped = line.trimStart();\n    const indent = line.length - stripped.length;\n    \n    // Clean up multiple spaces within the line\n    let cleanedLine = stripped.split(/\\s+/).join(' ');\n    \n    // Re-add indentation\n    if (indent > 0) {\n      cleanedLine = ' '.repeat(indent) + cleanedLine;\n    }\n    \n    processedLines.push(cleanedLine);\n  }\n  \n  formatted = processedLines.join('\\n');\n  \n  // Normalize multiple line breaks (max 2)\n  formatted = formatted.replace(/\\n{3,}/g, '\\n\\n');\n  \n  // Format headers (lines ending with ':')\n  formatted = formatted.replace(/^([A-Z][^:\\n]+:)$/gm, '**$1**');\n  \n  // Standardize bullet points\n  formatted = formatted.replace(/^[-*•]\\s*/gm, '• ');\n  \n  // Standardize numbered lists\n  formatted = formatted.replace(/^(\\d+)\\.\\s*/gm, '$1. ');\n  \n  return formatted;\n};\n\n/* ───── gather inputs ───────────────────────────────────────────────── */\n// Get data from the simplified schema of Get Database Page by Id\nconst pageData = $('Get Database Page by Id').first().json;\n\n/* Notion look‑ups already performed upstream */\nconst deptNode  = $('Find Department page').first().json;\nconst roleNode  = $('Find Role page').first().json;\nconst teamNode  = $('Find Team page').first().json;\nconst userNode  = $('convert to json object4').first().json;\n\n/* IDs & names */\nconst ttId   = pageData.property_tt_requisition_id?.trim() || null;\nconst isUpdate = !!ttId;                           // ← create vs update\n\nconst departmentId = deptNode?.property_tt_department_id?.trim() || null;\nconst roleId       = roleNode?.property_tt_role_id?.trim()         || null;\nconst teamName     = teamNode?.name                                || null;\nconst userId       = userNode?.data?.[0]?.id?.trim()               || null;\n\n/* ───── salary logic ───────────────────────────────────────────────── */\nconst wantRange = pageData.property_need_salary_range ?? true;\nlet minSalary   = null;\nlet maxSalary   = null;\n\nif (wantRange) {\n  minSalary = pageData.property_min_salary ?? null;\n  maxSalary = pageData.property_max_salary ?? null;\n} else {\n  const fixed = pageData.property_fixed_salary ?? null;\n  if (fixed !== null) {\n    minSalary = fixed - 1;      // TT requires both even if equal\n    maxSalary = fixed;\n  }\n}\n\n/* ───── relationships ──────────────────────────────────────────────── */\nconst relationships = {\n  location:  { data: { id: '1200146', type: 'locations'  } },  // constant\n};\nif (departmentId) relationships.department = { data: { id: departmentId, type: 'departments' } };\nif (roleId)       relationships.role       = { data: { id: roleId,       type: 'roles'       } };\nif (userId)       relationships.user       = { data: { id: userId,       type: 'users'       } };\n\n/* ───── extract date values ─────────────────────────────────────────── */\nconst desireStartDate = pageData.property_desire_start_day_of_newcomer?.start ?? null;\n\n/* ───── payload ─────────────────────────────────────────────────────── */\nconst payload = {\n  data: {\n    type: 'requisitions',\n    ...(isUpdate ? { id: ttId } : {}),            // add id only on update\n    attributes: {\n      'job-title':          pageData.property_name ?? '',\n      'job-description':    formatJobDescription(pageData.property_job_description),\n      country:              isoCountry(pageData.property_country ?? ''),\n      'min-salary':         minSalary,\n      'max-salary':         maxSalary,\n      currency:             'USD',\n      'salary-time-unit':   (pageData.property_salary_period ?? '').toLowerCase(),\n      'number-of-openings': pageData.property_expected_number_of_hires ?? null,\n      'custom-form-answers': {\n        desire_start_day:       desireStartDate,\n        priority_of_position:   pageData.property_priority_of_position ?? null,\n        level_of_candidate:     pageData.property_level_of_candidate ?? null,\n        team:                   teamName,\n        reason:                 Array.isArray(pageData.property_reason) ? pageData.property_reason.join(', ') : (pageData.property_reason ?? ''),\n        will_there_be_a_test_task:\n                                 pageData.property_will_there_be_a_test_task ?? null,\n        please_define_hiring_stages:\n                                 formatJobDescription(pageData.property_please_define_hiring_stages),\n        key_competencies_for_position:\n                                 formatJobDescription(pageData.property_key_competencies_for_position),\n        additional_comments_for_recruiter_or_approval:\n                                 formatJobDescription(pageData.property_additional_comments_for_recruiter_or_approval)\n      },\n      status: 'pending'\n    },\n    relationships\n  }\n};\n\n/* ───── output ──────────────────────────────────────────────────────── */\nreturn {\n  payload,\n  isUpdate,\n  ttId,\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        560,
-        928
+        608,
+        1200
       ],
-      "id": "b8ea74d0-5324-4b93-b54a-856a3182c862",
+      "id": "WEBHOOK_ID_25_PLACEHOLDER",
       "name": "Assemble Body Universal"
     },
     {
@@ -628,10 +628,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1488,
-        832
+        1536,
+        1104
       ],
-      "id": "bfcb9981-bc3c-4f6d-b93d-7197532f06c7",
+      "id": "WEBHOOK_ID_26_PLACEHOLDER",
       "name": "Reset for Creating"
     },
     {
@@ -647,14 +647,14 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        -208,
-        928
+        -160,
+        1200
       ],
-      "id": "b255e2e9-e96c-4674-9e08-97cf726e251f",
+      "id": "WEBHOOK_ID_27_PLACEHOLDER",
       "name": "Find Role page",
       "credentials": {
         "notionApi": {
-          "id": "dvG81BygcxjHVM4C",
+          "id": "CREDENTIAL_ID_01_PLACEHOLDER",
           "name": "Manager's Home"
         }
       }
@@ -672,14 +672,14 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        80,
-        928
+        128,
+        1200
       ],
-      "id": "e998a41f-da94-46ed-a951-33fd4581b818",
+      "id": "WEBHOOK_ID_28_PLACEHOLDER",
       "name": "Find Team page",
       "credentials": {
         "notionApi": {
-          "id": "dvG81BygcxjHVM4C",
+          "id": "CREDENTIAL_ID_01_PLACEHOLDER",
           "name": "Manager's Home"
         }
       }
@@ -697,14 +697,14 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        352,
-        928
+        400,
+        1200
       ],
-      "id": "1903a4f5-154f-429d-a1fe-637205088918",
+      "id": "WEBHOOK_ID_29_PLACEHOLDER",
       "name": "Find Department page",
       "credentials": {
         "notionApi": {
-          "id": "WFQ5qkbH2adfLXpC",
+          "id": "CREDENTIAL_ID_05_PLACEHOLDER",
           "name": "Integration QA Zapier (Notion)"
         }
       }
@@ -724,15 +724,15 @@
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
       "position": [
-        3248,
-        704
+        3296,
+        976
       ],
-      "id": "361055a4-66dd-43ec-8871-83360a5546fd",
+      "id": "WEBHOOK_ID_30_PLACEHOLDER",
       "name": "Slack",
-      "webhookId": "eb978c2c-bf74-4ff4-b810-46f4627d318b",
+      "webhookId": "WEBHOOK_ID_31_PLACEHOLDER",
       "credentials": {
         "slackApi": {
-          "id": "h4hYe6hY0YHsd0no",
+          "id": "CREDENTIAL_ID_04_PLACEHOLDER",
           "name": "Vira Bot"
         }
       }
@@ -752,15 +752,15 @@
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
       "position": [
-        2288,
-        1392
+        2336,
+        1664
       ],
-      "id": "1ac71f67-258f-4fb0-aaad-96d5391fdc0b",
+      "id": "WEBHOOK_ID_32_PLACEHOLDER",
       "name": "Send Notification to Slack Channel",
-      "webhookId": "eb978c2c-bf74-4ff4-b810-46f4627d318b",
+      "webhookId": "WEBHOOK_ID_31_PLACEHOLDER",
       "credentials": {
         "slackApi": {
-          "id": "h4hYe6hY0YHsd0no",
+          "id": "CREDENTIAL_ID_04_PLACEHOLDER",
           "name": "Vira Bot"
         }
       }
@@ -780,15 +780,15 @@
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
       "position": [
-        2624,
-        -80
+        2672,
+        192
       ],
-      "id": "e95fa183-edb3-4be8-bb05-3516a9b5c1f2",
+      "id": "WEBHOOK_ID_33_PLACEHOLDER",
       "name": "Send Personal Message to Pick the Approval Flow",
-      "webhookId": "1878348d-3c16-4fcd-a63a-cff36624bc23",
+      "webhookId": "WEBHOOK_ID_34_PLACEHOLDER",
       "credentials": {
         "slackApi": {
-          "id": "h4hYe6hY0YHsd0no",
+          "id": "CREDENTIAL_ID_04_PLACEHOLDER",
           "name": "Vira Bot"
         }
       }
@@ -797,59 +797,73 @@
       "parameters": {
         "jsCode": "const error = $input.all()[0].json;\n\n// Try to determine which node failed\nlet errorSource = 'Unknown';\ntry {\n  // Get the previous node's name from execution context\n  const prevNodeName = $prevNode?.name || 'Unknown';\n  errorSource = prevNodeName;\n} catch (e) {\n  // Fallback if context is not available\n  errorSource = 'Workflow';\n}\n\nconst statusCode = error.statusCode || error.code || 500;\n\n// Build a comprehensive error response\nconst errorResponse = {\n  success: false,\n  error: {\n    message: error.message || error.description || \"An error occurred during workflow execution\",\n    statusCode: statusCode,\n    source: errorSource,\n    timestamp: new Date().toISOString()\n  }\n};\n\n// Add additional error details if available\nif (error.cause) {\n  errorResponse.error.cause = error.cause;\n}\n\nif (error.description) {\n  errorResponse.error.details = error.description;\n}\n\n// Add context about what was being attempted\nif (error.config && error.config.url) {\n  errorResponse.error.failedEndpoint = error.config.url;\n}\n\n// Log the error for debugging\nconsole.error('Workflow Error:', errorResponse);\n\nreturn [{\n  json: errorResponse\n}];"
       },
-      "id": "18e440d2-83d3-4aac-9ef8-c55b1a1f7db2",
+      "id": "WEBHOOK_ID_35_PLACEHOLDER",
       "name": "Process Error Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2000,
-        560
+        2048,
+        832
       ]
     },
     {
       "parameters": {
         "jsCode": "const error = $input.all()[0].json;\n\n// Try to determine which node failed\nlet errorSource = 'Unknown';\ntry {\n  // Get the previous node's name from execution context\n  const prevNodeName = $prevNode?.name || 'Unknown';\n  errorSource = prevNodeName;\n} catch (e) {\n  // Fallback if context is not available\n  errorSource = 'Workflow';\n}\n\nconst statusCode = error.statusCode || error.code || 500;\n\n// Build a comprehensive error response\nconst errorResponse = {\n  success: false,\n  error: {\n    message: error.message || error.description || \"An error occurred during workflow execution\",\n    statusCode: statusCode,\n    source: errorSource,\n    timestamp: new Date().toISOString()\n  }\n};\n\n// Add additional error details if available\nif (error.cause) {\n  errorResponse.error.cause = error.cause;\n}\n\nif (error.description) {\n  errorResponse.error.details = error.description;\n}\n\n// Add context about what was being attempted\nif (error.config && error.config.url) {\n  errorResponse.error.failedEndpoint = error.config.url;\n}\n\n// Log the error for debugging\nconsole.error('Workflow Error:', errorResponse);\n\nreturn [{\n  json: errorResponse\n}];"
       },
-      "id": "11c4e1bb-8608-4d47-9a0e-71bee68ae273",
+      "id": "WEBHOOK_ID_36_PLACEHOLDER",
       "name": "Process Error Response1",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2048,
-        1280
+        2096,
+        1552
       ]
     },
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "e527235d-7bf0-47b2-b5c1-3498bb22bf5e",
+        "path": "WEBHOOK_ID_37_PLACEHOLDER",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -1792,
-        1120
+        -1744,
+        1392
       ],
-      "id": "25cf675c-3b97-4f10-b417-c9f868491b06",
+      "id": "WEBHOOK_ID_38_PLACEHOLDER",
       "name": "New Page Created",
-      "webhookId": "e527235d-7bf0-47b2-b5c1-3498bb22bf5e"
+      "webhookId": "WEBHOOK_ID_37_PLACEHOLDER"
     },
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "c9f718f4-4334-4c21-a559-c5f03caa33f4",
+        "path": "WEBHOOK_ID_39_PLACEHOLDER",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -1792,
-        736
+        -1744,
+        1008
       ],
-      "id": "db0b572c-28de-462a-9fb9-71058b796685",
+      "id": "WEBHOOK_ID_40_PLACEHOLDER",
       "name": "Create requisition button",
-      "webhookId": "c9f718f4-4334-4c21-a559-c5f03caa33f4"
+      "webhookId": "WEBHOOK_ID_39_PLACEHOLDER"
+    },
+    {
+      "parameters": {
+        "amount": 120
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1552,
+        1200
+      ],
+      "id": "WEBHOOK_ID_41_PLACEHOLDER",
+      "name": "Wait",
+      "webhookId": "WEBHOOK_ID_42_PLACEHOLDER"
     }
   ],
   "connections": {
@@ -990,11 +1004,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Update Requisition In Case Of An Error1": {
-      "main": [
-        []
       ]
     },
     "Update Requisition Page1": {
@@ -1152,7 +1161,7 @@
       "main": [
         [
           {
-            "node": "Get Database Page by Id",
+            "node": "Wait",
             "type": "main",
             "index": 0
           }
@@ -1160,6 +1169,17 @@
       ]
     },
     "Create requisition button": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
       "main": [
         [
           {
@@ -1177,55 +1197,55 @@
         "headers": {
           "host": "viragamesinc.app.n8n.cloud",
           "user-agent": "NotionAutomation",
-          "content-length": "7750",
+          "content-length": "5054",
           "accept-encoding": "gzip, br",
-          "baggage": "sentry-environment=production,sentry-release=0.0.4092,sentry-public_key=529a6d1990e5471d874257842c4f4ad8,sentry-trace_id=dcf20097fb5b4fc3833d5d009838ad8c",
+          "baggage": "sentry-environment=production,sentry-release=0.0.4125,sentry-public_key=NOTION_DATABASE_ID_05_PLACEHOLDER,sentry-trace_id=NOTION_DATABASE_ID_06_PLACEHOLDER",
           "cdn-loop": "cloudflare; loops=1; subreqs=1",
-          "cf-connecting-ip": "44.241.75.17",
+          "cf-connecting-ip": "44.224.156.54",
           "cf-ew-via": "15",
           "cf-ipcountry": "US",
-          "cf-ray": "96aeac55736ba32d-PDX",
+          "cf-ray": "96bda9c4936dff19-PDX",
           "cf-visitor": "{\"scheme\":\"https\"}",
           "cf-worker": "n8n.cloud",
           "content-type": "application/json",
-          "sentry-trace": "dcf20097fb5b4fc3833d5d009838ad8c-baa626262dc8dd03",
-          "traceparent": "00-582257010ff63ea5d3428709fbc6624e-d5b4c1c738788501-00",
-          "x-forwarded-for": "44.241.75.17, 172.68.174.84",
+          "sentry-trace": "NOTION_DATABASE_ID_06_PLACEHOLDER-88964a69c490988f",
+          "traceparent": "00-NOTION_DATABASE_ID_07_PLACEHOLDER-c2b03054fceb10af-00",
+          "x-forwarded-for": "44.224.156.54, 172.68.175.24",
           "x-forwarded-host": "viragamesinc.app.n8n.cloud",
           "x-forwarded-port": "443",
           "x-forwarded-proto": "https",
-          "x-forwarded-server": "traefik-prod-users-gwc-33-6b64989c5-s7rlk",
+          "x-forwarded-server": "traefik-prod-users-gwc-33-6b64989c5-8f96v",
           "x-is-trusted": "yes",
-          "x-real-ip": "44.241.75.17"
+          "x-real-ip": "44.224.156.54"
         },
         "params": {},
         "query": {},
         "body": {
           "source": {
             "type": "automation",
-            "automation_id": "2469748b-c8c2-8008-9e4f-004de74b2158",
-            "action_id": "2479748b-c8c2-8013-b1a9-005a0ee5853b",
-            "event_id": "4da4a557-7594-4c08-aa1a-fac658732f5f",
+            "automation_id": "WEBHOOK_ID_43_PLACEHOLDER",
+            "action_id": "WEBHOOK_ID_44_PLACEHOLDER",
+            "event_id": "WEBHOOK_ID_45_PLACEHOLDER",
             "attempt": 1
           },
           "data": {
             "object": "page",
-            "id": "2479748b-c8c2-8174-94e6-dd45a04b20b1",
-            "created_time": "2025-08-06T12:52:00.000Z",
-            "last_edited_time": "2025-08-06T12:52:00.000Z",
+            "id": "WEBHOOK_ID_46_PLACEHOLDER",
+            "created_time": "2025-08-08T08:32:00.000Z",
+            "last_edited_time": "2025-08-08T08:32:00.000Z",
             "created_by": {
               "object": "user",
-              "id": "209d872b-594c-81cf-b74d-000218d99309"
+              "id": "WEBHOOK_ID_47_PLACEHOLDER"
             },
             "last_edited_by": {
               "object": "user",
-              "id": "00000000-0000-0000-0000-000000000003"
+              "id": "WEBHOOK_ID_48_PLACEHOLDER"
             },
             "cover": null,
             "icon": null,
             "parent": {
               "type": "database_id",
-              "database_id": "21c9748b-c8c2-802e-8cf1-caa3257b046a"
+              "database_id": "WEBHOOK_ID_49_PLACEHOLDER"
             },
             "archived": false,
             "in_trash": false,
@@ -1235,17 +1255,13 @@
                 "type": "formula",
                 "formula": {
                   "type": "string",
-                  "string": "⚠️ Role Status must be 'Verified'"
+                  "string": "⚠️ Country\n⚠️ Department Status must be 'Verified'\n⚠️ Role Status must be 'Verified'\n⚠️ Location\n⚠️ Department\n⚠️ Role\n⚠️ Expected number of hires\n⚠️ Hiring process start date\n⚠️ Salary Period\n⚠️ Desired start day of newcomer\n⚠️ Level of Candidate\n⚠️ Team\n⚠️ Reason\n⚠️ Will there be a test task?\n⚠️ Please define hiring stages"
                 }
               },
               "Role*": {
                 "id": "%3C%7CeD",
                 "type": "relation",
-                "relation": [
-                  {
-                    "id": "23e9748b-c8c2-80cc-9704-ef3e0d2dcbe4"
-                  }
-                ],
+                "relation": [],
                 "has_more": false
               },
               "Person": {
@@ -1254,12 +1270,12 @@
                 "people": [
                   {
                     "object": "user",
-                    "id": "209d872b-594c-81cf-b74d-000218d99309",
-                    "name": "Kirill Dubovyk",
-                    "avatar_url": "https://lh3.googleusercontent.com/a/ACg8ocLrCgJBF3iexqqRAaPurUQ32828u0mtwF216L5gq-ePN5qtPA=s100",
+                    "id": "WEBHOOK_ID_47_PLACEHOLDER",
+                    "name": "Pavlo Holub",
+                    "avatar_url": null,
                     "type": "person",
                     "person": {
-                      "email": "kirill.dubovyk@vira.games"
+                      "email": "your.email@yourcompany.com"
                     }
                   }
                 ]
@@ -1267,84 +1283,31 @@
               "Country*": {
                 "id": "%40dZp",
                 "type": "select",
-                "select": {
-                  "id": "6271d1a8-7562-4d97-a9fb-20a0e33d2ef6",
-                  "name": "Ukraine",
-                  "color": "blue"
-                }
+                "select": null
               },
               "Role status": {
                 "id": "Aork",
                 "type": "rollup",
                 "rollup": {
                   "type": "array",
-                  "array": [
-                    {
-                      "type": "status",
-                      "status": {
-                        "id": "nqEO",
-                        "name": "Needs verification",
-                        "color": "blue"
-                      }
-                    }
-                  ],
+                  "array": [],
                   "function": "show_original"
                 }
               },
               "Job Description": {
                 "id": "Eem%3D",
                 "type": "rich_text",
-                "rich_text": [
-                  {
-                    "type": "text",
-                    "text": {
-                      "content": "Тут мають бути додані для усіх позицій стандартні поля: 1. Обовʼязки 2. Навички та досвід.                                                                                              ОБОВʼЯЗКОВО Для позицій Leadership(L1-L3) також необхідно додати місію ролі, цілі.",
-                      "link": null
-                    },
-                    "annotations": {
-                      "bold": false,
-                      "italic": false,
-                      "strikethrough": false,
-                      "underline": false,
-                      "code": false,
-                      "color": "default"
-                    },
-                    "plain_text": "Тут мають бути додані для усіх позицій стандартні поля: 1. Обовʼязки 2. Навички та досвід.                                                                                              ОБОВʼЯЗКОВО Для позицій Leadership(L1-L3) також необхідно додати місію ролі, цілі.",
-                    "href": null
-                  }
-                ]
+                "rich_text": []
               },
               "Additional Comments for Recruiter or Approval": {
                 "id": "Ff%3BM",
                 "type": "rich_text",
-                "rich_text": [
-                  {
-                    "type": "text",
-                    "text": {
-                      "content": "Additional Comment",
-                      "link": null
-                    },
-                    "annotations": {
-                      "bold": false,
-                      "italic": false,
-                      "strikethrough": false,
-                      "underline": false,
-                      "code": false,
-                      "color": "default"
-                    },
-                    "plain_text": "Additional Comment",
-                    "href": null
-                  }
-                ]
+                "rich_text": []
               },
               "Team*": {
                 "id": "G_o%5D",
                 "type": "relation",
-                "relation": [
-                  {
-                    "id": "23e9748b-c8c2-8090-b761-de1a92a01ac4"
-                  }
-                ],
+                "relation": [],
                 "has_more": false
               },
               "Role Outcomes": {
@@ -1355,11 +1318,7 @@
               "Desire start Day of newcomer*": {
                 "id": "J%3C%60s",
                 "type": "date",
-                "date": {
-                  "start": "2025-08-29",
-                  "end": null,
-                  "time_zone": null
-                }
+                "date": null
               },
               "Role Competences": {
                 "id": "JZO%3A",
@@ -1369,30 +1328,22 @@
               "Min Salary": {
                 "id": "Qgea",
                 "type": "number",
-                "number": 1500
+                "number": null
               },
               "Salary Period*": {
                 "id": "SbuN",
                 "type": "select",
-                "select": {
-                  "id": "6c69eb15-b825-45f7-94a2-ff84d9531831",
-                  "name": "Monthly",
-                  "color": "purple"
-                }
+                "select": null
               },
               "Max Salary": {
                 "id": "SuVS",
                 "type": "number",
-                "number": 3000
+                "number": null
               },
               "Department*": {
                 "id": "WpZP",
                 "type": "relation",
-                "relation": [
-                  {
-                    "id": "1a09748b-c8c2-8091-9447-f1d4d95679e1"
-                  }
-                ],
+                "relation": [],
                 "has_more": false
               },
               "Fixed Salary": {
@@ -1403,11 +1354,7 @@
               "Location*": {
                 "id": "YW%3Ex",
                 "type": "select",
-                "select": {
-                  "id": "455809e5-e6bf-4313-85f9-3c7f0af59f8b",
-                  "name": "Europe (Remote)",
-                  "color": "yellow"
-                }
+                "select": null
               },
               "last_synced_at": {
                 "id": "%5D%3AYs",
@@ -1417,32 +1364,19 @@
               "Will there be a test task?": {
                 "id": "%5Eudy",
                 "type": "select",
-                "select": {
-                  "id": "e9c73020-329a-4dbe-b284-fb3070e64b0e",
-                  "name": "No",
-                  "color": "blue"
-                }
+                "select": null
               },
               "Expected number of hires*": {
                 "id": "%60CwR",
                 "type": "number",
-                "number": 1
+                "number": null
               },
               "Department status": {
                 "id": "attf",
                 "type": "rollup",
                 "rollup": {
                   "type": "array",
-                  "array": [
-                    {
-                      "type": "status",
-                      "status": {
-                        "id": "s}Wb",
-                        "name": "Verified",
-                        "color": "green"
-                      }
-                    }
-                  ],
+                  "array": [],
                   "function": "show_original"
                 }
               },
@@ -1450,7 +1384,7 @@
                 "id": "ei%3Dg",
                 "type": "date",
                 "date": {
-                  "start": "2025-10-05",
+                  "start": "2025-10-07",
                   "end": null,
                   "time_zone": null
                 }
@@ -1476,11 +1410,7 @@
               "Level of Candidate*": {
                 "id": "niOG",
                 "type": "select",
-                "select": {
-                  "id": "28e6e4b2-2ff7-4df9-8065-e8d1101f20fe",
-                  "name": "Middle",
-                  "color": "default"
-                }
+                "select": null
               },
               "tt_requisition_id": {
                 "id": "o%3DUp",
@@ -1490,20 +1420,14 @@
               "Reason*": {
                 "id": "qPJw",
                 "type": "multi_select",
-                "multi_select": [
-                  {
-                    "id": "61307672-e967-43d4-a0d6-f68301c261d7",
-                    "name": "Team Growth",
-                    "color": "default"
-                  }
-                ]
+                "multi_select": []
               },
               "Checking info": {
                 "id": "spWw",
                 "type": "formula",
                 "formula": {
                   "type": "string",
-                  "string": "⚠️ Role Status must be 'Verified'"
+                  "string": "⚠️ Country\n⚠️ Department Status must be 'Verified'\n⚠️ Role Status must be 'Verified'\n⚠️ Location\n⚠️ Department\n⚠️ Role\n⚠️ Expected number of hires\n⚠️ Hiring process start date\n⚠️ Salary Period\n⚠️ Desired start day of newcomer\n⚠️ Level of Candidate\n⚠️ Team\n⚠️ Reason\n⚠️ Will there be a test task?\n⚠️ Please define hiring stages"
                 }
               },
               "Created by": {
@@ -1511,12 +1435,12 @@
                 "type": "created_by",
                 "created_by": {
                   "object": "user",
-                  "id": "209d872b-594c-81cf-b74d-000218d99309",
-                  "name": "Kirill Dubovyk",
-                  "avatar_url": "https://lh3.googleusercontent.com/a/ACg8ocLrCgJBF3iexqqRAaPurUQ32828u0mtwF216L5gq-ePN5qtPA=s100",
+                  "id": "WEBHOOK_ID_47_PLACEHOLDER",
+                  "name": "Pavlo Holub",
+                  "avatar_url": null,
                   "type": "person",
                   "person": {
-                    "email": "kirill.dubovyk@vira.games"
+                    "email": "your.email@yourcompany.com"
                   }
                 }
               },
@@ -1524,7 +1448,7 @@
                 "id": "th%3D%3A",
                 "type": "status",
                 "status": {
-                  "id": "9cdc92ed-1ee9-49da-a1ca-b6522c966cd9",
+                  "id": "WEBHOOK_ID_50_PLACEHOLDER",
                   "name": "New",
                   "color": "default"
                 }
@@ -1532,11 +1456,7 @@
               "Hiring process start date*": {
                 "id": "uYse",
                 "type": "date",
-                "date": {
-                  "start": "2025-08-06",
-                  "end": null,
-                  "time_zone": null
-                }
+                "date": null
               },
               "Key Competencies for position": {
                 "id": "wGNM",
@@ -1546,34 +1466,12 @@
               "Please define hiring stages": {
                 "id": "wq%5DQ",
                 "type": "rich_text",
-                "rich_text": [
-                  {
-                    "type": "text",
-                    "text": {
-                      "content": "Пропишіть які етапи мають бути для найму.                                    Стандарний процес найму  усіх позицій - Standart: 1. CV Screening Recruiter 2. Manager CV Screen 2. Recruiting Interview 3. Task Task(if needed) 4. Managers Interview 5. Offer.                                                 Leadership Hiring (L1-L3) - 1. Screening2. WHO3. Focused4. Reference",
-                      "link": null
-                    },
-                    "annotations": {
-                      "bold": false,
-                      "italic": false,
-                      "strikethrough": false,
-                      "underline": false,
-                      "code": false,
-                      "color": "default"
-                    },
-                    "plain_text": "Пропишіть які етапи мають бути для найму.                                    Стандарний процес найму  усіх позицій - Standart: 1. CV Screening Recruiter 2. Manager CV Screen 2. Recruiting Interview 3. Task Task(if needed) 4. Managers Interview 5. Offer.                                                 Leadership Hiring (L1-L3) - 1. Screening2. WHO3. Focused4. Reference",
-                    "href": null
-                  }
-                ]
+                "rich_text": []
               },
               "Priority of position": {
                 "id": "yw%5C%3B",
                 "type": "select",
-                "select": {
-                  "id": "be39a035-c621-432e-ae24-d8c94a3c9055",
-                  "name": "2 (High Priority)",
-                  "color": "orange"
-                }
+                "select": null
               },
               "Need salary range?": {
                 "id": "%7DPqO",
@@ -1587,7 +1485,7 @@
                   {
                     "type": "text",
                     "text": {
-                      "content": "Test Automation Role",
+                      "content": "Lead UAM",
                       "link": null
                     },
                     "annotations": {
@@ -1598,24 +1496,24 @@
                       "code": false,
                       "color": "default"
                     },
-                    "plain_text": "Test Automation Role",
+                    "plain_text": "Lead UAM",
                     "href": null
                   }
                 ]
               }
             },
-            "url": "https://www.notion.so/Test-Automation-Role-2479748bc8c2817494e6dd45a04b20b1",
+            "url": "https://www.notion.so/Lead-UAM-NOTION_DATABASE_ID_08_PLACEHOLDER",
             "public_url": null,
-            "request_id": "5b5b254a-bd28-48c7-a842-714fa83b0975"
+            "request_id": "WEBHOOK_ID_51_PLACEHOLDER"
           }
         },
-        "webhookUrl": "https://viragamesinc.app.n8n.cloud/webhook/e527235d-7bf0-47b2-b5c1-3498bb22bf5e",
+        "webhookUrl": "https://viragamesinc.app.n8n.cloud/webhook/WEBHOOK_ID_37_PLACEHOLDER",
         "executionMode": "production"
       }
     ]
   },
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "db8c34fa8115e7968d24f8e10f4a110dda7aba2143d2fb70a8ce47f420de93d6"
+    "instanceId": "NOTION_DATABASE_ID_03_PLACEHOLDERNOTION_DATABASE_ID_04_PLACEHOLDER"
   }
 }

@@ -1,0 +1,298 @@
+{
+  "name": "Notion Database to CSV Export (Webhook Version)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "notion-to-csv-export",
+        "responseMode": "onReceived",
+        "responseData": "firstEntryJson",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        300
+      ],
+      "webhookId": "notion-csv-export"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract and validate webhook payload\nconst webhookData = $input.first().json.body || $input.first().json;\n\n// Required: database URL or ID\nconst databaseInput = webhookData.databaseUrl || webhookData.databaseId || webhookData.database;\n\nif (!databaseInput) {\n  throw new Error('Missing required parameter: databaseUrl or databaseId');\n}\n\n// Optional parameters with defaults\nconst csvFileName = webhookData.fileName || webhookData.csvFileName || `notion_export_${new Date().toISOString().slice(0,10)}_${Date.now()}.csv`;\nconst filters = webhookData.filters || null;\nconst sorts = webhookData.sorts || null;\nconst includeArchived = webhookData.includeArchived || false;\nconst pageSize = Math.min(webhookData.pageSize || 100, 100); // Max 100 per Notion API\n\n// Parse database input\nlet databaseId = '';\nif (databaseInput.includes('notion.so') || databaseInput.includes('notion.site')) {\n  // Extract ID from URL\n  const matches = databaseInput.match(/([a-f0-9]{32}|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);\n  if (matches) {\n    databaseId = matches[0];\n  }\n} else {\n  // Assume it's already an ID\n  databaseId = databaseInput.replace(/-/g, '');\n}\n\nif (!databaseId) {\n  throw new Error('Invalid database input. Please provide a valid Notion database URL or ID.');\n}\n\nconsole.log('Processing request:', {\n  databaseId,\n  csvFileName,\n  hasFilters: !!filters,\n  hasSorts: !!sorts,\n  includeArchived\n});\n\nreturn [{\n  json: {\n    databaseId: databaseId,\n    databaseUrl: databaseInput,\n    csvFileName: csvFileName,\n    filters: filters,\n    sorts: sorts,\n    includeArchived: includeArchived,\n    pageSize: pageSize,\n    timestamp: new Date().toISOString(),\n    requestId: `req_${Date.now()}`\n  }\n}];"
+      },
+      "id": "validate-webhook-input",
+      "name": "Validate Webhook Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Advanced paginated fetch with filters and sorts\nconst config = $input.first().json;\nconst databaseId = config.databaseId;\n\n// You need to configure this in n8n credentials or environment\nconst notionApiKey = $env.NOTION_API_KEY || 'YOUR_NOTION_API_TOKEN_PLACEHOLDER';\n\nlet allPages = [];\nlet hasMore = true;\nlet startCursor = undefined;\nlet pageCount = 0;\nconst maxPages = 1000; // Increased limit for large databases\nconst pageSize = config.pageSize || 100;\n\nconsole.log(`Starting paginated fetch from database: ${databaseId}`);\n\n// Build query body\nfunction buildQueryBody() {\n  const body = {\n    page_size: pageSize\n  };\n  \n  // Add filters if provided\n  if (config.filters) {\n    body.filter = config.filters;\n  }\n  \n  // Add sorts if provided\n  if (config.sorts) {\n    body.sorts = config.sorts;\n  }\n  \n  // Add archived flag\n  if (config.includeArchived) {\n    body.filter_properties = [];\n    body.archived = false;\n  }\n  \n  // Add cursor for pagination\n  if (startCursor) {\n    body.start_cursor = startCursor;\n  }\n  \n  return body;\n}\n\n// Fetch all pages with pagination\nwhile (hasMore && pageCount < maxPages) {\n  try {\n    const requestBody = buildQueryBody();\n    \n    const response = await this.helpers.httpRequest({\n      method: 'POST',\n      url: `https://api.notion.com/v1/databases/${databaseId}/query`,\n      headers: {\n        'Authorization': `Bearer ${notionApiKey}`,\n        'Notion-Version': '2022-06-28',\n        'Content-Type': 'application/json'\n      },\n      body: JSON.stringify(requestBody),\n      json: true,\n      timeout: 30000 // 30 second timeout\n    });\n    \n    pageCount++;\n    const itemsInBatch = response.results?.length || 0;\n    console.log(`Fetched batch ${pageCount}: ${itemsInBatch} items`);\n    \n    // Add pages from this batch\n    if (response.results && Array.isArray(response.results)) {\n      allPages = allPages.concat(response.results);\n    }\n    \n    // Check for more pages\n    hasMore = response.has_more || false;\n    startCursor = response.next_cursor || undefined;\n    \n    // Progress update\n    if (pageCount % 10 === 0) {\n      console.log(`Progress: ${pageCount} batches processed, ${allPages.length} total items`);\n    }\n    \n    // Rate limiting - Notion allows 3 requests per second\n    await new Promise(resolve => setTimeout(resolve, 350));\n    \n  } catch (error) {\n    console.error(`Error fetching batch ${pageCount + 1}:`, error.message);\n    \n    // Retry logic for rate limits\n    if (error.message.includes('rate_limited')) {\n      console.log('Rate limited, waiting 10 seconds...');\n      await new Promise(resolve => setTimeout(resolve, 10000));\n      continue;\n    }\n    \n    throw error;\n  }\n}\n\nconsole.log(`✅ Pagination complete: ${pageCount} batches, ${allPages.length} total items`);\n\nreturn [{\n  json: {\n    pages: allPages,\n    metadata: {\n      totalPages: allPages.length,\n      batchesProcessed: pageCount,\n      databaseId: databaseId,\n      requestId: config.requestId,\n      filters: config.filters,\n      sorts: config.sorts\n    }\n  }\n}];"
+      },
+      "id": "fetch-notion-database",
+      "name": "Fetch Notion Database",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        650,
+        300
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Advanced data processing with type handling\nconst pagesData = $input.first().json.pages;\nconst processedRows = [];\n\n// Enhanced property value extraction\nfunction extractPropertyValue(property, propertyName) {\n  if (!property) return '';\n  \n  const type = property.type;\n  \n  try {\n    switch (type) {\n      case 'title':\n        return property.title?.map(t => t.plain_text).join('') || '';\n      \n      case 'rich_text':\n        return property.rich_text?.map(t => t.plain_text).join('') || '';\n      \n      case 'number':\n        return property.number !== null ? property.number : '';\n      \n      case 'select':\n        return property.select?.name || '';\n      \n      case 'multi_select':\n        return property.multi_select?.map(s => s.name).join('; ') || '';\n      \n      case 'date':\n        if (property.date?.start) {\n          const start = new Date(property.date.start).toLocaleDateString();\n          if (property.date.end) {\n            const end = new Date(property.date.end).toLocaleDateString();\n            return `${start} - ${end}`;\n          }\n          return start;\n        }\n        return '';\n      \n      case 'checkbox':\n        return property.checkbox ? '✓' : '';\n      \n      case 'url':\n        return property.url || '';\n      \n      case 'email':\n        return property.email || '';\n      \n      case 'phone_number':\n        return property.phone_number || '';\n      \n      case 'formula':\n        if (property.formula?.type === 'string') return property.formula.string || '';\n        if (property.formula?.type === 'number') return property.formula.number !== null ? property.formula.number : '';\n        if (property.formula?.type === 'boolean') return property.formula.boolean ? '✓' : '';\n        if (property.formula?.type === 'date' && property.formula.date?.start) {\n          return new Date(property.formula.date.start).toLocaleDateString();\n        }\n        return '';\n      \n      case 'relation':\n        const relationCount = property.relation?.length || 0;\n        return relationCount > 0 ? `${relationCount} linked` : '';\n      \n      case 'rollup':\n        if (property.rollup?.type === 'number') return property.rollup.number !== null ? property.rollup.number : '';\n        if (property.rollup?.type === 'date' && property.rollup.date?.start) {\n          return new Date(property.rollup.date.start).toLocaleDateString();\n        }\n        if (property.rollup?.type === 'array') {\n          return `${property.rollup.array?.length || 0} items`;\n        }\n        return '';\n      \n      case 'people':\n        return property.people?.map(p => p.name || p.person?.email || 'User').join('; ') || '';\n      \n      case 'files':\n        const fileCount = property.files?.length || 0;\n        if (fileCount > 0) {\n          const fileNames = property.files.map(f => f.name || 'File').join('; ');\n          return fileNames;\n        }\n        return '';\n      \n      case 'created_time':\n        return property.created_time ? new Date(property.created_time).toLocaleString() : '';\n      \n      case 'created_by':\n        return property.created_by?.name || property.created_by?.person?.email || '';\n      \n      case 'last_edited_time':\n        return property.last_edited_time ? new Date(property.last_edited_time).toLocaleString() : '';\n      \n      case 'last_edited_by':\n        return property.last_edited_by?.name || property.last_edited_by?.person?.email || '';\n      \n      case 'status':\n        return property.status?.name || '';\n      \n      case 'unique_id':\n        return property.unique_id?.prefix ? `${property.unique_id.prefix}-${property.unique_id.number}` : property.unique_id?.number || '';\n      \n      default:\n        console.warn(`Unknown property type '${type}' for property '${propertyName}'`);\n        return '';\n    }\n  } catch (error) {\n    console.error(`Error extracting property '${propertyName}' of type '${type}':`, error);\n    return '';\n  }\n}\n\n// Process each page\nlet rowIndex = 0;\nfor (const page of pagesData) {\n  rowIndex++;\n  \n  const row = {\n    '_Row': rowIndex,\n    '_ID': page.id,\n    '_Created': page.created_time ? new Date(page.created_time).toLocaleString() : '',\n    '_Modified': page.last_edited_time ? new Date(page.last_edited_time).toLocaleString() : '',\n    '_Archived': page.archived ? 'Yes' : 'No',\n    '_URL': page.url\n  };\n  \n  // Extract all properties\n  if (page.properties) {\n    for (const [propName, propValue] of Object.entries(page.properties)) {\n      // Clean property name for CSV (remove special characters)\n      const cleanName = propName.replace(/[,\\n\\r]/g, ' ');\n      row[cleanName] = extractPropertyValue(propValue, propName);\n    }\n  }\n  \n  processedRows.push(row);\n  \n  // Progress logging\n  if (rowIndex % 100 === 0) {\n    console.log(`Processed ${rowIndex} rows...`);\n  }\n}\n\nconsole.log(`✅ Processed ${processedRows.length} rows for CSV export`);\n\n// Get all unique column names and sort them\nconst systemColumns = ['_Row', '_ID', '_Created', '_Modified', '_Archived', '_URL'];\nconst propertyColumns = new Set();\n\nprocessedRows.forEach(row => {\n  Object.keys(row).forEach(key => {\n    if (!systemColumns.includes(key)) {\n      propertyColumns.add(key);\n    }\n  });\n});\n\nconst sortedPropertyColumns = Array.from(propertyColumns).sort();\nconst allColumns = [...systemColumns, ...sortedPropertyColumns];\n\n// Ensure all rows have all columns (fill missing with empty string)\nconst normalizedRows = processedRows.map(row => {\n  const normalizedRow = {};\n  allColumns.forEach(col => {\n    normalizedRow[col] = row[col] || '';\n  });\n  return normalizedRow;\n});\n\nreturn [{\n  json: {\n    rows: normalizedRows,\n    columns: allColumns,\n    stats: {\n      totalRows: normalizedRows.length,\n      totalColumns: allColumns.length,\n      systemColumns: systemColumns.length,\n      propertyColumns: sortedPropertyColumns.length\n    }\n  }\n}];"
+      },
+      "id": "process-and-flatten",
+      "name": "Process and Flatten Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        850,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convert processed data to CSV format\nconst data = $input.first().json;\nconst rows = data.rows;\nconst columns = data.columns;\n\nif (!rows || rows.length === 0) {\n  return [{\n    json: {\n      error: 'No data to export',\n      csvContent: ''\n    }\n  }];\n}\n\n// Function to escape CSV values\nfunction escapeCSV(value) {\n  if (value === null || value === undefined) return '';\n  \n  const stringValue = String(value);\n  \n  // Check if value needs escaping\n  if (stringValue.includes(',') || stringValue.includes('\"') || stringValue.includes('\\n') || stringValue.includes('\\r')) {\n    // Escape quotes by doubling them\n    return '\"' + stringValue.replace(/\"/g, '\"\"') + '\"';\n  }\n  \n  return stringValue;\n}\n\n// Create CSV content\nlet csvContent = '';\n\n// Add BOM for Excel UTF-8 compatibility\ncsvContent += '\\uFEFF';\n\n// Add headers\ncsvContent += columns.map(col => escapeCSV(col)).join(',') + '\\n';\n\n// Add data rows\nfor (const row of rows) {\n  const rowValues = columns.map(col => escapeCSV(row[col]));\n  csvContent += rowValues.join(',') + '\\n';\n}\n\nconsole.log(`Generated CSV with ${rows.length} rows and ${columns.length} columns`);\n\n// Return both the CSV content and binary data\nconst buffer = Buffer.from(csvContent, 'utf-8');\nconst base64 = buffer.toString('base64');\n\nreturn [{\n  json: {\n    csvContent: csvContent,\n    fileName: $('Validate Webhook Input').first().json.csvFileName,\n    mimeType: 'text/csv',\n    encoding: 'utf-8',\n    size: buffer.length,\n    rows: rows.length,\n    columns: columns.length\n  },\n  binary: {\n    data: {\n      data: base64,\n      mimeType: 'text/csv',\n      fileName: $('Validate Webhook Input').first().json.csvFileName\n    }\n  }\n}];"
+      },
+      "id": "generate-csv",
+      "name": "Generate CSV",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1050,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "={{ $json.fileName }}",
+        "options": {
+          "append": false,
+          "encoding": "utf8"
+        }
+      },
+      "id": "save-csv-file",
+      "name": "Save CSV File",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        1250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate comprehensive export report\nconst config = $('Validate Webhook Input').first().json;\nconst fetchMetadata = $('Fetch Notion Database').first().json.metadata;\nconst processStats = $('Process and Flatten Data').first().json.stats;\nconst csvInfo = $('Generate CSV').first().json;\n\nconst report = {\n  success: true,\n  requestId: config.requestId,\n  timestamp: new Date().toISOString(),\n  \n  database: {\n    id: config.databaseId,\n    url: config.databaseUrl,\n    filters: config.filters ? 'Applied' : 'None',\n    sorts: config.sorts ? 'Applied' : 'None',\n    includeArchived: config.includeArchived\n  },\n  \n  export: {\n    fileName: csvInfo.fileName,\n    fileSize: `${(csvInfo.size / 1024).toFixed(2)} KB`,\n    encoding: csvInfo.encoding,\n    mimeType: csvInfo.mimeType\n  },\n  \n  statistics: {\n    totalRecords: fetchMetadata.totalPages,\n    exportedRows: processStats.totalRows,\n    totalColumns: processStats.totalColumns,\n    systemColumns: processStats.systemColumns,\n    propertyColumns: processStats.propertyColumns,\n    batchesProcessed: fetchMetadata.batchesProcessed\n  },\n  \n  performance: {\n    processingTime: `${(Date.now() - parseInt(config.requestId.split('_')[1])) / 1000} seconds`,\n    averageRecordsPerBatch: Math.round(fetchMetadata.totalPages / fetchMetadata.batchesProcessed)\n  },\n  \n  download: {\n    available: true,\n    path: `./output/${csvInfo.fileName}`,\n    validUntil: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours\n  }\n};\n\nconsole.log('Export completed successfully:', JSON.stringify(report, null, 2));\n\nreturn [report];"
+      },
+      "id": "generate-report",
+      "name": "Generate Export Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json, null, 2) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "X-Request-Id",
+                "value": "={{ $json.requestId }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1650,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Error handler with detailed diagnostics\nconst error = $input.first().json.error || $input.first().json;\nconst config = $('Validate Webhook Input').first().json || {};\n\nconst errorReport = {\n  success: false,\n  requestId: config.requestId || 'unknown',\n  timestamp: new Date().toISOString(),\n  \n  error: {\n    message: error.message || error.error || 'Unknown error occurred',\n    type: error.name || 'UnknownError',\n    code: error.code || 'EXPORT_FAILED'\n  },\n  \n  context: {\n    databaseId: config.databaseId,\n    databaseUrl: config.databaseUrl,\n    fileName: config.csvFileName\n  },\n  \n  troubleshooting: [\n    'Verify the Notion API key is correct and active',\n    'Check if the database ID/URL is valid',\n    'Ensure the Notion integration has access to the database',\n    'Verify any filters or sorts are properly formatted',\n    'Check if the database is not archived or deleted'\n  ],\n  \n  documentation: {\n    notionAPI: 'https://developers.notion.com/reference/intro',\n    n8nDocs: 'https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.notion/',\n    filterFormat: 'https://developers.notion.com/reference/post-database-query-filter'\n  }\n};\n\nconsole.error('Export failed:', JSON.stringify(errorReport, null, 2));\n\nreturn [errorReport];"
+      },
+      "id": "error-handler",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1450,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json, null, 2) }}",
+        "options": {
+          "responseCode": 500,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "X-Error",
+                "value": "true"
+              }
+            ]
+          }
+        }
+      },
+      "id": "error-response",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1650,
+        500
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Webhook Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Webhook Input": {
+      "main": [
+        [
+          {
+            "node": "Fetch Notion Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Notion Database": {
+      "main": [
+        [
+          {
+            "node": "Process and Flatten Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process and Flatten Data": {
+      "main": [
+        [
+          {
+            "node": "Generate CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate CSV": {
+      "main": [
+        [
+          {
+            "node": "Save CSV File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save CSV File": {
+      "main": [
+        [
+          {
+            "node": "Generate Export Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Export Report": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "error-handler"
+  },
+  "versionId": "2.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "INSTANCE_ID_PLACEHOLDER"
+  },
+  "id": "notion-csv-webhook",
+  "tags": [
+    {
+      "name": "Notion",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "CSV Export",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "Webhook",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "Automation",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+  ]
+}

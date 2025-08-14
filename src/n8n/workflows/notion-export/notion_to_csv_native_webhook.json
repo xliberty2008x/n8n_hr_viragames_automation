@@ -1,0 +1,482 @@
+{
+  "name": "Notion to CSV - Native Webhook Version",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "notion-csv-native",
+        "responseMode": "onReceived",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "id": "CREDENTIAL_ID_07_PLACEHOLDER",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "notion-csv-native"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "databaseId",
+              "value": "={{ $json.body.databaseUrl || $json.body.databaseId }}"
+            },
+            {
+              "name": "fileName",
+              "value": "={{ $json.body.fileName || 'notion_export_' + $now.format('yyyy-MM-dd_HHmmss') + '.csv' }}"
+            }
+          ],
+          "boolean": [
+            {
+              "name": "includeArchived",
+              "value": "={{ $json.body.includeArchived || false }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract-params",
+      "name": "Extract Parameters",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "={{ $json.databaseId }}",
+          "mode": "url"
+        },
+        "returnAll": true,
+        "filterType": "manual",
+        "filters": "={{ $('Webhook').item.json.body.filters }}",
+        "sorts": "={{ $('Webhook').item.json.body.sorts }}",
+        "options": {
+          "downloadFiles": false
+        }
+      },
+      "id": "fetch-notion-pages",
+      "name": "Fetch Notion Pages",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        300
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "{{CREDENTIAL_ID}}",
+          "name": "Notion API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "each",
+        "batchSize": 100,
+        "options": {}
+      },
+      "id": "split-batches",
+      "name": "Split Into Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        840,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process Notion properties and flatten them for CSV\nconst items = $input.all();\nconst processedItems = [];\n\nfor (const item of items) {\n  const page = item.json;\n  const flatRow = {\n    '_ID': page.id,\n    '_Created': page.created_time,\n    '_Modified': page.last_edited_time,\n    '_Archived': page.archived ? 'Yes' : 'No',\n    '_URL': page.url\n  };\n  \n  // Process properties\n  if (page.properties) {\n    for (const [propName, prop] of Object.entries(page.properties)) {\n      let value = '';\n      \n      switch (prop.type) {\n        case 'title':\n          value = prop.title?.map(t => t.plain_text).join('') || '';\n          break;\n        case 'rich_text':\n          value = prop.rich_text?.map(t => t.plain_text).join('') || '';\n          break;\n        case 'number':\n          value = prop.number || '';\n          break;\n        case 'select':\n          value = prop.select?.name || '';\n          break;\n        case 'multi_select':\n          value = prop.multi_select?.map(s => s.name).join(', ') || '';\n          break;\n        case 'date':\n          if (prop.date?.start) {\n            value = prop.date.start;\n            if (prop.date.end) {\n              value += ' to ' + prop.date.end;\n            }\n          }\n          break;\n        case 'checkbox':\n          value = prop.checkbox ? 'Yes' : 'No';\n          break;\n        case 'url':\n          value = prop.url || '';\n          break;\n        case 'email':\n          value = prop.email || '';\n          break;\n        case 'phone_number':\n          value = prop.phone_number || '';\n          break;\n        case 'formula':\n          if (prop.formula?.string) value = prop.formula.string;\n          else if (prop.formula?.number !== undefined) value = prop.formula.number;\n          else if (prop.formula?.boolean !== undefined) value = prop.formula.boolean ? 'Yes' : 'No';\n          else if (prop.formula?.date) value = prop.formula.date.start || '';\n          break;\n        case 'relation':\n          value = prop.relation?.length || 0;\n          break;\n        case 'rollup':\n          if (prop.rollup?.number !== undefined) value = prop.rollup.number;\n          else if (prop.rollup?.array) value = prop.rollup.array.length;\n          break;\n        case 'people':\n          value = prop.people?.map(p => p.name || p.person?.email || 'User').join(', ') || '';\n          break;\n        case 'files':\n          value = prop.files?.map(f => f.name || 'File').join(', ') || '';\n          break;\n        case 'status':\n          value = prop.status?.name || '';\n          break;\n        case 'created_time':\n          value = prop.created_time || '';\n          break;\n        case 'created_by':\n          value = prop.created_by?.name || '';\n          break;\n        case 'last_edited_time':\n          value = prop.last_edited_time || '';\n          break;\n        case 'last_edited_by':\n          value = prop.last_edited_by?.name || '';\n          break;\n      }\n      \n      flatRow[propName] = value;\n    }\n  }\n  \n  processedItems.push({ json: flatRow });\n}\n\nreturn processedItems;"
+      },
+      "id": "process-properties",
+      "name": "Process Properties",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "aggregateItems",
+        "options": {}
+      },
+      "id": "merge-batches",
+      "name": "Merge Batches",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3.1,
+      "position": [
+        1240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "fileFormat": "csv",
+        "options": {
+          "fileName": "={{ $('Extract Parameters').first().json.fileName }}",
+          "headerRow": true,
+          "delimiter": ",",
+          "includeHeader": true,
+          "includeBOM": true
+        }
+      },
+      "id": "create-csv",
+      "name": "Create CSV",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "={{ $('Extract Parameters').first().json.fileName }}",
+        "options": {}
+      },
+      "id": "save-file",
+      "name": "Save File",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        1640,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "success"
+            },
+            {
+              "name": "message",
+              "value": "Export completed successfully"
+            },
+            {
+              "name": "fileName",
+              "value": "={{ $('Extract Parameters').first().json.fileName }}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}"
+            },
+            {
+              "name": "downloadPath",
+              "value": "={{ './output/' + $('Extract Parameters').first().json.fileName }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "totalRecords",
+              "value": "={{ $('Merge Batches').item.json.length }}"
+            },
+            {
+              "name": "processingTimeMs",
+              "value": "={{ Date.now() - Date.parse($('Webhook').item.json.headers['x-request-time'] || $now.minus(5, 'seconds').toISO()) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "prepare-response",
+      "name": "Prepare Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1840,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json, null, 2) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "CREDENTIAL_ID_08_PLACEHOLDER",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        2040,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-database",
+              "leftValue": "={{ $json.databaseId }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "validate-input",
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        440,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "error"
+            },
+            {
+              "name": "message",
+              "value": "Missing required parameter: databaseUrl or databaseId"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "error-response",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json, null, 2) }}",
+        "options": {
+          "responseCode": 400,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "error-webhook-response",
+      "name": "Error Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        840,
+        600
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Parameters": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "Fetch Notion Pages",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Notion Pages": {
+      "main": [
+        [
+          {
+            "node": "Split Into Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Into Batches": {
+      "main": [
+        [
+          {
+            "node": "Process Properties",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Properties": {
+      "main": [
+        [
+          {
+            "node": "Split Into Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Batches": {
+      "main": [
+        [
+          {
+            "node": "Create CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create CSV": {
+      "main": [
+        [
+          {
+            "node": "Save File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save File": {
+      "main": [
+        [
+          {
+            "node": "Prepare Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Response": {
+      "main": [
+        [
+          {
+            "node": "Error Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "notion-csv-native-webhook"
+  },
+  "id": "notion-csv-webhook-native",
+  "tags": [
+    {
+      "name": "Notion",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "CSV Export",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "Native Nodes",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "Webhook",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+  ]
+}
